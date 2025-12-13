@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, func
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from datetime import datetime, date
@@ -19,13 +19,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# VERİTABANI AYARLARI
+# DB AYARLARI
 SQLALCHEMY_DATABASE_URL = "sqlite:///./kafe_sistemi.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# TABLO YAPISI
+# TABLO GÜNCELLENDİ: Çift Doğrulama İçin Yeni Alanlar
 class OrderDB(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True, index=True)
@@ -33,20 +33,25 @@ class OrderDB(Base):
     table_number = Column(String)
     items = Column(String)
     total_price = Column(Float)
-    status = Column(String, default="preparing")
+    status = Column(String, default="preparing") # preparing, ready, completed
+    waiter_ok = Column(Boolean, default=False)   # Garson Teslim Ettim dedi mi?
+    customer_ok = Column(Boolean, default=False) # Müşteri Aldım dedi mi?
     created_at = Column(DateTime, default=datetime.now)
 
 Base.metadata.create_all(bind=engine)
 
-# VERİ MODELLERİ
 class OrderSchema(BaseModel):
     customer_name: str
     table_number: str
     items: str
     total_price: float
 
-class OrderStatusUpdate(BaseModel):
+class StatusUpdate(BaseModel):
     status: str
+
+# Çift Doğrulama Modeli
+class ConfirmSchema(BaseModel):
+    role: str # 'waiter' veya 'customer'
 
 def get_db():
     db = SessionLocal()
@@ -55,7 +60,7 @@ def get_db():
     finally:
         db.close()
 
-# --- API UÇLARI ---
+# --- API ---
 
 @app.post("/api/orders")
 def create_order(order: OrderSchema, db: Session = Depends(get_db)):
@@ -64,7 +69,9 @@ def create_order(order: OrderSchema, db: Session = Depends(get_db)):
         table_number=order.table_number,
         items=order.items,
         total_price=order.total_price,
-        status="preparing"
+        status="preparing",
+        waiter_ok=False,
+        customer_ok=False
     )
     db.add(new_order)
     db.commit()
@@ -73,42 +80,53 @@ def create_order(order: OrderSchema, db: Session = Depends(get_db)):
 
 @app.get("/api/orders")
 def get_orders(db: Session = Depends(get_db)):
-    # Sadece bugünün ve bekleyen siparişleri getir (Panel performansı için)
     return db.query(OrderDB).order_by(OrderDB.created_at.desc()).limit(100).all()
 
-# TARİHLİ GEÇMİŞ SORGULAMA (YENİ ÖZELLİK)
 @app.get("/api/orders/history")
-def get_order_history(date_str: str, db: Session = Depends(get_db)):
-    # Gelen tarih formatı: "2025-12-13"
+def get_history(date_str: str, db: Session = Depends(get_db)):
     try:
         target_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-        orders = db.query(OrderDB).filter(func.date(OrderDB.created_at) == target_date).all()
-        return orders
-    except Exception as e:
+        return db.query(OrderDB).filter(func.date(OrderDB.created_at) == target_date).all()
+    except:
         return []
 
 @app.get("/api/orders/{order_id}")
 def get_single_order(order_id: int, db: Session = Depends(get_db)):
     order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
-    if not order:
-        raise HTTPException(status_code=404, detail="Sipariş yok")
+    if not order: raise HTTPException(status_code=404, detail="Sipariş yok")
     return order
 
-@app.put("/api/orders/{order_id}")
-def update_order_status(order_id: int, status_update: OrderStatusUpdate, db: Session = Depends(get_db)):
+# Sadece Durum Güncelleme (Hazırla butonu için)
+@app.put("/api/orders/{order_id}/status")
+def update_status(order_id: int, data: StatusUpdate, db: Session = Depends(get_db)):
     order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
-    if not order:
-        raise HTTPException(status_code=404, detail="Bulunamadı")
-    order.status = status_update.status
+    if not order: raise HTTPException(404, "Yok")
+    order.status = data.status
     db.commit()
-    return {"status": "success"}
+    return {"status": "updated"}
+
+# YENİ: ÇİFT DOĞRULAMA API'Sİ
+@app.put("/api/orders/{order_id}/confirm")
+def confirm_order(order_id: int, data: ConfirmSchema, db: Session = Depends(get_db)):
+    order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
+    if not order: raise HTTPException(404, "Yok")
+
+    if data.role == 'waiter':
+        order.waiter_ok = True
+    elif data.role == 'customer':
+        order.customer_ok = True
+    
+    # İkisi de TRUE ise Completed yap
+    if order.waiter_ok and order.customer_ok:
+        order.status = 'completed'
+    
+    db.commit()
+    return {"status": order.status, "waiter": order.waiter_ok, "customer": order.customer_ok}
 
 @app.get("/")
-async def read_index():
-    return FileResponse('index.html')
+async def read_index(): return FileResponse('index.html')
 
 @app.get("/panel")
-async def read_panel():
-    return FileResponse('panel.html')
+async def read_panel(): return FileResponse('panel.html')
 
 app.mount("/static", StaticFiles(directory="."), name="static")
