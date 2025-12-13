@@ -158,4 +158,118 @@
                 <h3 class="text-xl font-bold text-orange-400 mb-4 pl-2 border-l-4 border-orange-500">${cat.name}</h3>
                 <div class="grid grid-cols-1 gap-4">
                     ${items.map(item => `
-                        <div class="glass-card p-4 rounded-2xl flex justify-
+                        <div class="glass-card p-4 rounded-2xl flex justify-between items-center relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition pointer-events-none"></div>
+                            <div class="flex items-center gap-4 relative z-10 pointer-events-none">
+                                <div class="text-4xl bg-gray-800 w-16 h-16 flex items-center justify-center rounded-2xl shadow-inner">
+                                    ${item.img}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg text-white">${item.name}</h4>
+                                    <p class="text-xs text-gray-400">${item.desc}</p>
+                                    <div class="text-orange-400 font-bold mt-1">${item.price} ₺</div>
+                                </div>
+                            </div>
+                            <button onclick="addToCart(${item.id})" class="relative z-20 bg-gray-800 border border-gray-600 text-white w-10 h-10 rounded-full flex items-center justify-center active:bg-orange-600 transition shadow-lg cursor-pointer">
+                                <span class="text-xl font-bold">+</span>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    window.setActive = (el) => {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    window.addToCart = (id) => {
+        const item = menuItems.find(i => i.id === id);
+        if(item) {
+            cart.push(item);
+            if(navigator.vibrate) navigator.vibrate(50);
+            updateCart();
+        }
+    };
+
+    function updateCart() {
+        const bar = document.getElementById('cart-bar');
+        const badge = document.getElementById('cart-badge');
+        if (cart.length > 0) {
+            bar.classList.remove('translate-y-[150%]');
+            document.getElementById('total-price').innerText = cart.reduce((a, b) => a + b.price, 0) + ' ₺';
+            badge.innerText = cart.length;
+            badge.classList.remove('hidden');
+        }
+    }
+
+    window.openPaymentModal = () => document.getElementById('payment-modal').classList.remove('hidden');
+    window.closePaymentModal = () => document.getElementById('payment-modal').classList.add('hidden');
+
+    window.processOrder = async () => {
+        const name = document.getElementById('customer-name').value;
+        const table = document.getElementById('table-no').value;
+        if(!name) { alert("İsim giriniz!"); return; }
+        
+        // Sipariş verilirken de izin isteyelim (garanti olsun)
+        requestNotificationPermission();
+
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    customer_name: name, table_number: table,
+                    items: cart.map(i => i.name).join(', '),
+                    total_price: cart.reduce((a,b)=>a+b.price,0)
+                })
+            });
+            const data = await res.json();
+            if(data.status === 'success') {
+                closePaymentModal();
+                activeOrderId = data.order_id;
+                alert("Sipariş Alındı! Telefonu kapatabilirsiniz, hazır olunca bildirim gelecek.");
+                cart = [];
+                document.getElementById('cart-bar').classList.add('translate-y-[150%]');
+                startStatusCheck();
+            }
+        } catch(e) { alert("Hata"); }
+    };
+
+    function startStatusCheck() {
+        const check = setInterval(async () => {
+            if(!activeOrderId) { clearInterval(check); return; }
+            try {
+                const res = await fetch(`/api/orders/${activeOrderId}`);
+                const order = await res.json();
+                if(order.status === 'ready') {
+                    // --- BİLDİRİM VE TİTREŞİM ZAMANI ---
+                    
+                    // 1. Güçlü Titreşim (Bızzz Bızz Bızzz)
+                    if(navigator.vibrate) {
+                        navigator.vibrate([200, 100, 200, 100, 500]);
+                    }
+
+                    // 2. Sistem Bildirimi Gönder (Kilit Ekranı İçin)
+                    if (Notification.permission === "granted") {
+                        new Notification("SİPARİŞİNİZ HAZIR! 🔔", {
+                            body: "Yemeğiniz hazır, lütfen mutfak bankosundan teslim alınız.",
+                            icon: "https://cdn-icons-png.flaticon.com/512/3571/3571572.png", // Zil ikonu
+                            vibrate: [200, 100, 200]
+                        });
+                    }
+
+                    // 3. Ekranı Aç (Yeşil Ekran)
+                    document.getElementById('ready-view').classList.remove('hidden');
+                    activeOrderId = null;
+                }
+            } catch(e) {}
+        }, 4000);
+    }
+
+    init();
+  </script>
+</body>
+</html>
