@@ -3,10 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
-from datetime import datetime
+from datetime import datetime, date
 import os
 
 app = FastAPI()
@@ -19,21 +19,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# VERİTABANI BAĞLANTISI
+# VERİTABANI AYARLARI
 SQLALCHEMY_DATABASE_URL = "sqlite:///./kafe_sistemi.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# SİPARİŞ TABLOSU (Masa No ve Durum Eklendi)
+# TABLO YAPISI
 class OrderDB(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True, index=True)
     customer_name = Column(String)
-    table_number = Column(String)  # MASA NUMARASI
+    table_number = Column(String)
     items = Column(String)
     total_price = Column(Float)
-    status = Column(String, default="preparing") # preparing (hazırlanıyor), ready (hazır), completed (teslim edildi)
+    status = Column(String, default="preparing")
     created_at = Column(DateTime, default=datetime.now)
 
 Base.metadata.create_all(bind=engine)
@@ -57,7 +57,6 @@ def get_db():
 
 # --- API UÇLARI ---
 
-# Sipariş Oluştur
 @app.post("/api/orders")
 def create_order(order: OrderSchema, db: Session = Depends(get_db)):
     new_order = OrderDB(
@@ -72,12 +71,22 @@ def create_order(order: OrderSchema, db: Session = Depends(get_db)):
     db.refresh(new_order)
     return {"status": "success", "order_id": new_order.id}
 
-# Tüm Siparişleri Çek (Garson İçin)
 @app.get("/api/orders")
 def get_orders(db: Session = Depends(get_db)):
-    return db.query(OrderDB).order_by(OrderDB.created_at.desc()).all()
+    # Sadece bugünün ve bekleyen siparişleri getir (Panel performansı için)
+    return db.query(OrderDB).order_by(OrderDB.created_at.desc()).limit(100).all()
 
-# Tek Bir Siparişi Çek (Müşteri Bildirimi İçin)
+# TARİHLİ GEÇMİŞ SORGULAMA (YENİ ÖZELLİK)
+@app.get("/api/orders/history")
+def get_order_history(date_str: str, db: Session = Depends(get_db)):
+    # Gelen tarih formatı: "2025-12-13"
+    try:
+        target_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        orders = db.query(OrderDB).filter(func.date(OrderDB.created_at) == target_date).all()
+        return orders
+    except Exception as e:
+        return []
+
 @app.get("/api/orders/{order_id}")
 def get_single_order(order_id: int, db: Session = Depends(get_db)):
     order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
@@ -85,18 +94,15 @@ def get_single_order(order_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Sipariş yok")
     return order
 
-# Sipariş Durumunu Güncelle (Hazır veya Tamamlandı Yap)
 @app.put("/api/orders/{order_id}")
 def update_order_status(order_id: int, status_update: OrderStatusUpdate, db: Session = Depends(get_db)):
     order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Bulunamadı")
-    
     order.status = status_update.status
     db.commit()
-    return {"status": "success", "new_status": order.status}
+    return {"status": "success"}
 
-# --- HTML SAYFALARI ---
 @app.get("/")
 async def read_index():
     return FileResponse('index.html')
