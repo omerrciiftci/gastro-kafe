@@ -30,7 +30,8 @@
 <body class="pb-32">
 
   <div id="welcome-screen" class="fixed inset-0 z-[100] bg-gray-900 flex flex-col items-center justify-center text-center p-6 bg-[url('https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80')] bg-cover bg-center">
-    <div class="absolute inset-0 bg-black/70"></div> <div class="relative z-10 animate-bounce-in">
+    <div class="absolute inset-0 bg-black/70"></div>
+    <div class="relative z-10 animate-bounce-in">
         <div class="w-24 h-24 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-orange-500/30">
             <span class="text-4xl">🍽️</span>
         </div>
@@ -55,8 +56,7 @@
             👤
         </div>
     </div>
-    <div class="flex overflow-x-auto gap-3 p-4 pt-0 hide-scroll" id="category-nav">
-        </div>
+    <div class="flex overflow-x-auto gap-3 p-4 pt-0 hide-scroll" id="category-nav"></div>
   </div>
 
   <div class="container mx-auto px-4 mt-6" id="menu-container"></div>
@@ -106,15 +106,9 @@
   </div>
 
   <script>
-    // --- GİRİŞ ANİMASYONU ---
     function enterMenu() {
         const screen = document.getElementById('welcome-screen');
         screen.classList.add('slide-up');
-        // Kategori nav çubuğunu hafifçe titret
-        setTimeout(() => {
-            document.querySelector('.sticky').classList.add('animate-pulse');
-            setTimeout(() => document.querySelector('.sticky').classList.remove('animate-pulse'), 500);
-        }, 800);
     }
 
     const categories = [
@@ -139,7 +133,6 @@
     let activeOrderId = null;
 
     function init() {
-        // Kategoriler
         const nav = document.getElementById('category-nav');
         nav.innerHTML = categories.map((c, i) => `
             <a href="#${c.id}" onclick="setActive(this)" class="cat-btn ${i===0?'active':''} px-6 py-3 rounded-2xl border border-gray-700 text-gray-300 font-bold whitespace-nowrap transition-all duration-300 text-sm">
@@ -147,7 +140,6 @@
             </a>
         `).join('');
 
-        // Ürünler
         const container = document.getElementById('menu-container');
         container.innerHTML = categories.map(cat => {
             const items = menuItems.filter(i => i.cat === cat.id);
@@ -158,8 +150,9 @@
                 <div class="grid grid-cols-1 gap-4">
                     ${items.map(item => `
                         <div class="glass-card p-4 rounded-2xl flex justify-between items-center relative overflow-hidden group">
-                            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition"></div>
-                            <div class="flex items-center gap-4 relative z-10">
+                            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition pointer-events-none"></div>
+                            
+                            <div class="flex items-center gap-4 relative z-10 pointer-events-none">
                                 <div class="text-4xl bg-gray-800 w-16 h-16 flex items-center justify-center rounded-2xl shadow-inner">
                                     ${item.img}
                                 </div>
@@ -169,7 +162,8 @@
                                     <div class="text-orange-400 font-bold mt-1">${item.price} ₺</div>
                                 </div>
                             </div>
-                            <button onclick="addToCart(${item.id})" class="bg-gray-800 border border-gray-600 text-white w-10 h-10 rounded-full flex items-center justify-center active:bg-orange-600 transition shadow-lg">
+                            
+                            <button onclick="addToCart(${item.id})" class="relative z-20 bg-gray-800 border border-gray-600 text-white w-10 h-10 rounded-full flex items-center justify-center active:bg-orange-600 transition shadow-lg cursor-pointer">
                                 <span class="text-xl font-bold">+</span>
                             </button>
                         </div>
@@ -179,7 +173,6 @@
         }).join('');
     }
 
-    // Butona basınca aktif sınıfını değiştir
     window.setActive = (el) => {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
@@ -187,9 +180,11 @@
 
     window.addToCart = (id) => {
         const item = menuItems.find(i => i.id === id);
-        cart.push(item);
-        if(navigator.vibrate) navigator.vibrate(50); // Titreşim
-        updateCart();
+        if(item) {
+            cart.push(item);
+            if(navigator.vibrate) navigator.vibrate(50);
+            updateCart();
+        }
     };
 
     function updateCart() {
@@ -216,8 +211,7 @@
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    customer_name: name,
-                    table_number: table,
+                    customer_name: name, table_number: table,
                     items: cart.map(i => i.name).join(', '),
                     total_price: cart.reduce((a,b)=>a+b.price,0)
                 })
@@ -226,8 +220,7 @@
             if(data.status === 'success') {
                 closePaymentModal();
                 activeOrderId = data.order_id;
-                // Bekleme modu yerine direkt hazır kontrolüne başla (basitleştirilmiş)
-                alert("Sipariş Alındı! Hazır olunca bildirim gelecektir.");
+                alert("Sipariş Alındı!");
                 cart = [];
                 document.getElementById('cart-bar').classList.add('translate-y-[150%]');
                 startStatusCheck();
@@ -236,15 +229,15 @@
     };
 
     function startStatusCheck() {
-        setInterval(async () => {
-            if(!activeOrderId) return;
+        const check = setInterval(async () => {
+            if(!activeOrderId) { clearInterval(check); return; }
             try {
                 const res = await fetch(`/api/orders/${activeOrderId}`);
                 const order = await res.json();
                 if(order.status === 'ready') {
                     document.getElementById('ready-view').classList.remove('hidden');
                     if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
-                    activeOrderId = null; // Döngüyü durdurmak için
+                    activeOrderId = null;
                 }
             } catch(e) {}
         }, 4000);
