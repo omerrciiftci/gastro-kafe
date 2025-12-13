@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mutfak Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta http-equiv="refresh" content="10">
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-4">
+    
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center text-orange-500 border-b border-gray-700 pb-4">🔥 MUTFAK KONTROL PANELİ</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="bg-gray-800 rounded-2xl p-4 min-h-[500px]">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2 border-b border-gray-700 pb-2 text-yellow-400">
+                    <span>🕒</span> HAZIRLANIYOR
+                </h2>
+                <div id="col-preparing" class="space-y-3"></div>
+            </div>
+
+            <div class="bg-gray-800 rounded-2xl p-4 min-h-[500px] border-2 border-green-800">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-green-400 border-b border-gray-700 pb-2">
+                    <span>🔔</span> SERVİS BEKLİYOR
+                </h2>
+                <div id="col-ready" class="space-y-3"></div>
+            </div>
+
+            <div class="bg-gray-800/50 rounded-2xl p-4 min-h-[500px]">
+                <h2 class="text-xl font-bold mb-4 text-gray-500 border-b border-gray-700 pb-2">
+                    <span>🏁</span> TAMAMLANANLAR
+                </h2>
+                <div id="col-completed" class="space-y-3 opacity-60"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // SİPARİŞ DURUMUNU DEĞİŞTİR
+        async function updateStatus(id, status) {
+            try {
+                await fetch(`/api/orders/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({status: status})
+                });
+                loadOrders(); // Listeyi hemen güncelle
+            } catch(e) { alert("Hata oluştu"); }
+        }
+
+        // SİPARİŞLERİ ÇEK VE KUTULARA DAĞIT
+        async function loadOrders() {
+            try {
+                const res = await fetch('/api/orders');
+                const orders = await res.json();
+                
+                const preparingHTML = [];
+                const readyHTML = [];
+                const completedHTML = [];
+
+                orders.forEach(o => {
+                    const card = `
+                        <div class="bg-gray-700 p-4 rounded-xl shadow-lg border-l-4 ${o.status==='preparing'?'border-yellow-500':(o.status==='ready'?'border-green-500':'border-gray-500')}">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-lg font-bold bg-white text-black px-2 py-1 rounded">${o.table_number}</span>
+                                <span class="text-xs text-gray-400">#${o.id}</span>
+                            </div>
+                            <div class="text-xl font-bold mb-1">${o.customer_name}</div>
+                            <div class="bg-black/30 p-2 rounded text-sm text-gray-300 mb-3">${o.items}</div>
+                            <div class="text-right text-lg font-bold mb-3">${o.total_price} ₺</div>
+
+                            ${o.status === 'preparing' ? 
+                                `<button onclick="updateStatus(${o.id}, 'ready')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition animate-pulse">✅ HAZIR (Müşteriyi Çağır)</button>` 
+                                : ''}
+                            
+                            ${o.status === 'ready' ? 
+                                `<button onclick="updateStatus(${o.id}, 'completed')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition">🏁 TESLİM ET & ARŞİVLE</button>` 
+                                : ''}
+                        </div>
+                    `;
+
+                    if(o.status === 'preparing') preparingHTML.push(card);
+                    else if(o.status === 'ready') readyHTML.push(card);
+                    else completedHTML.push(card);
+                });
+
+                document.getElementById('col-preparing').innerHTML = preparingHTML.join('');
+                document.getElementById('col-ready').innerHTML = readyHTML.join('');
+                document.getElementById('col-completed').innerHTML = completedHTML.join('');
+
+            } catch(e) { console.log(e); }
+        }
+
+        setInterval(loadOrders, 3000); // 3 saniyede bir güncelle
+        loadOrders();
+    </script>
+</body>
+</html>

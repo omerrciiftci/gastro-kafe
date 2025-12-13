@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gastro Kafe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; padding-bottom: 100px; }
+    .hide-scroll::-webkit-scrollbar { display: none; }
+    .cat-btn.active { background-color: #ea580c; color: white; border-color: #ea580c; }
+    
+    /* Yanıp sönen yeşil bildirim efekti */
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+        70% { box-shadow: 0 0 0 20px rgba(22, 163, 74, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+    }
+    .ready-alert { animation: pulse-green 2s infinite; }
+  </style>
+</head>
+<body>
+
+  <div class="bg-white shadow-sm sticky top-0 z-40">
+    <div class="relative h-40 bg-gray-900 overflow-hidden">
+      <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80" class="w-full h-full object-cover opacity-60">
+      <div class="absolute bottom-4 left-4 text-white">
+        <h1 class="text-2xl font-bold">Gastro Kafe</h1>
+        <p class="text-xs text-gray-300">İnegöl Belediyesi</p>
+      </div>
+    </div>
+    <div class="flex overflow-x-auto gap-3 p-4 bg-white border-b hide-scroll" id="category-nav"></div>
+  </div>
+
+  <div class="container mx-auto px-4 mt-6 mb-24" id="menu-container"></div>
+
+  <div id="cart-bar" class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-2xl transform translate-y-full transition-transform duration-300 z-40 flex justify-between items-center">
+    <div>
+        <div class="text-xs text-gray-500">Toplam Tutar</div>
+        <div class="text-2xl font-bold text-gray-900" id="total-price">0 ₺</div>
+    </div>
+    <button onclick="openPaymentModal()" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2">
+        <span>Sepeti Onayla</span>
+        <span id="cart-badge" class="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span>
+    </button>
+  </div>
+
+  <div id="payment-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 animate-[slideUp_0.3s_ease-out]">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">Ödeme & Sipariş</h2>
+            <button onclick="closePaymentModal()" class="text-gray-400 text-2xl">&times;</button>
+        </div>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Masa Numarası</label>
+                <select id="table-no" class="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 outline-none focus:border-orange-500">
+                    <option value="Masa 1">Masa 1</option>
+                    <option value="Masa 2">Masa 2</option>
+                    <option value="Masa 3">Masa 3</option>
+                    <option value="Bahçe 1">Bahçe 1</option>
+                    <option value="Bahçe 2">Bahçe 2</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Adınız Soyadınız</label>
+                <input type="text" id="customer-name" placeholder="Size nasıl seslenelim?" class="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 outline-none focus:border-orange-500">
+            </div>
+
+            <div class="p-4 bg-gray-100 rounded-xl border border-gray-200 opacity-80">
+                <div class="text-xs font-bold text-gray-500 mb-2">💳 KREDİ KARTI (Demo Modu)</div>
+                <input type="text" placeholder="**** **** **** ****" class="w-full p-2 mb-2 rounded border text-sm" disabled>
+                <div class="flex gap-2">
+                    <input type="text" placeholder="AA/YY" class="w-1/2 p-2 rounded border text-sm" disabled>
+                    <input type="text" placeholder="CVV" class="w-1/2 p-2 rounded border text-sm" disabled>
+                </div>
+            </div>
+
+            <button onclick="processOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-green-700 transition">
+                Siparişi Tamamla & Öde
+            </button>
+        </div>
+    </div>
+  </div>
+
+  <div id="waiting-view" class="fixed inset-0 bg-white z-[60] hidden flex flex-col items-center justify-center p-8 text-center">
+    <div class="w-20 h-20 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+    <h2 class="text-2xl font-bold mb-2 text-gray-800">Sipariş Hazırlanıyor...</h2>
+    <p class="text-gray-500 mb-8">Mutfağa iletildi. Hazır olunca ekranınıza bildirim düşecek.</p>
+    <div class="bg-gray-100 p-4 rounded-xl w-full">
+        <div class="text-xs text-gray-500">Sipariş No</div>
+        <div class="text-xl font-bold text-gray-900" id="current-order-id">#</div>
+    </div>
+  </div>
+
+  <div id="ready-view" class="fixed inset-0 bg-green-600 z-[70] hidden flex flex-col items-center justify-center p-8 text-center text-white">
+    <div class="bg-white text-green-600 w-24 h-24 rounded-full flex items-center justify-center text-5xl mb-6 ready-alert">🔔</div>
+    <h2 class="text-3xl font-bold mb-4">SİPARİŞİNİZ HAZIR!</h2>
+    <p class="text-green-100 text-lg mb-8">Lütfen bankodan siparişinizi teslim alınız.</p>
+    <button onclick="location.reload()" class="bg-white text-green-700 px-8 py-4 rounded-xl font-bold shadow-lg">Tamam, Aldım</button>
+  </div>
+
+  <script>
+    const categories = [{id:'sicak',name:'🔥 Sıcaklar'},{id:'soguk',name:'❄️ Soğuklar'},{id:'tatli',name:'🍰 Tatlılar'}];
+    const menuItems = [
+        {id:1,cat:'sicak',name:'Latte',price:65,img:'☕'}, {id:2,cat:'sicak',name:'Çay',price:25,img:'🍵'},
+        {id:3,cat:'soguk',name:'Limonata',price:60,img:'🍋'}, {id:4,cat:'tatli',name:'Cheesecake',price:120,img:'🍰'},
+        {id:5,cat:'tatli',name:'Tost',price:90,img:'🥪'}
+    ];
+    let cart = [];
+    let activeOrderId = null;
+    let checkInterval = null;
+
+    function init() {
+        document.getElementById('category-nav').innerHTML = categories.map((c,i)=>`<button onclick="scrollCat('${c.id}',this)" class="cat-btn ${i===0?'active':''} px-5 py-2 rounded-full border text-sm font-bold whitespace-nowrap transition">${c.name}</button>`).join('');
+        document.getElementById('menu-container').innerHTML = categories.map(cat => {
+            const items=menuItems.filter(i=>i.cat===cat.id);
+            if(!items.length)return'';
+            return `<div id="${cat.id}" class="mb-6"><h3 class="font-bold text-lg mb-3">${cat.name}</h3><div class="grid gap-3">${items.map(i=>`<div class="bg-white p-3 rounded-xl shadow-sm border flex justify-between items-center"><div class="flex items-center gap-3"><div class="text-2xl bg-gray-50 w-10 h-10 flex items-center justify-center rounded-lg">${i.img}</div><div><div class="font-bold">${i.name}</div><div class="text-orange-600 font-bold text-sm">${i.price} ₺</div></div></div><button onclick="add(${i.id})" class="bg-gray-100 w-8 h-8 rounded-full font-bold text-gray-600">+</button></div>`).join('')}</div></div>`;
+        }).join('');
+    }
+
+    window.scrollCat=(id,b)=>{document.getElementById(id).scrollIntoView({behavior:'smooth'});document.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};
+    window.add=(id)=>{cart.push(menuItems.find(i=>i.id===id));updateCart()};
+    function updateCart(){const b=document.getElementById('cart-bar');const c=document.getElementById('cart-badge');if(cart.length>0){b.classList.remove('translate-y-full');document.getElementById('total-price').innerText=cart.reduce((a,b)=>a+b.price,0)+' ₺';c.innerText=cart.length;c.classList.remove('hidden')}}
+    window.openPaymentModal=()=>document.getElementById('payment-modal').classList.remove('hidden');
+    window.closePaymentModal=()=>document.getElementById('payment-modal').classList.add('hidden');
+
+    // SİPARİŞİ GÖNDER
+    window.processOrder = async () => {
+        const name = document.getElementById('customer-name').value;
+        const table = document.getElementById('table-no').value;
+        if(!name) { alert("Lütfen isminizi giriniz."); return; }
+
+        const itemsStr = cart.map(i => i.name).join(', ');
+        const total = cart.reduce((a,b)=>a+b.price,0);
+
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    customer_name: name, table_number: table,
+                    items: itemsStr, total_price: total
+                })
+            });
+            const data = await res.json();
+            if(data.status === 'success') {
+                closePaymentModal();
+                activeOrderId = data.order_id;
+                document.getElementById('current-order-id').innerText = "#" + activeOrderId;
+                document.getElementById('waiting-view').classList.remove('hidden');
+                cart = [];
+                // BİLDİRİM İÇİN SORGULAMAYA BAŞLA
+                startStatusCheck();
+            }
+        } catch(e) { alert("Bağlantı hatası!"); }
+    };
+
+    // HER 3 SANİYEDE BİR "SİPARİŞ HAZIR MI?" DİYE SOR
+    function startStatusCheck() {
+        checkInterval = setInterval(async () => {
+            if(!activeOrderId) return;
+            try {
+                const res = await fetch(`/api/orders/${activeOrderId}`);
+                const order = await res.json();
+                
+                if(order.status === 'ready') {
+                    // HAZIRSA YEŞİL EKRANI AÇ
+                    clearInterval(checkInterval);
+                    document.getElementById('waiting-view').classList.add('hidden');
+                    document.getElementById('ready-view').classList.remove('hidden');
+                    if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                }
+            } catch(e) {}
+        }, 3000);
+    }
+
+    init();
+  </script>
+</body>
+</html>
