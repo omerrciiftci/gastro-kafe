@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="author" content="Ömer Çiftçi">
     <title>Mutfak Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>body{background-color:#111827; color:white;}</style>
@@ -18,7 +19,7 @@
         </button>
     </div>
 
-    <div id="main-view" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div id="main-view" class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-12">
         <div class="bg-gray-800/50 rounded-2xl p-3 border border-yellow-600/30">
             <h2 class="font-bold text-yellow-400 mb-2 text-center text-lg">👨‍🍳 HAZIRLANIYOR</h2>
             <div id="col-preparing" class="space-y-2"></div>
@@ -49,6 +50,10 @@
         </div>
     </div>
 
+    <div class="fixed bottom-2 right-4 text-gray-600 text-xs opacity-60 hover:opacity-100 transition cursor-default select-none">
+        ⚡ Dev by <strong class="text-orange-500">Ömer Çiftçi</strong>
+    </div>
+
     <script>
         setInterval(()=>document.getElementById('clock').innerText=new Date().toLocaleTimeString(),1000);
         function toggleHistory(){ document.getElementById('history-view').classList.toggle('hidden'); }
@@ -77,20 +82,15 @@
                 orders.forEach(o => {
                     let btnHtml = '';
                     
-                    // STATUS: HAZIRLANIYOR
                     if(o.status === 'preparing') {
                         btnHtml = `<button onclick="setStatus(${o.id}, 'ready')" class="w-full bg-yellow-600 text-white font-bold py-2 rounded text-sm hover:bg-yellow-500">HAZIRLA 🍳</button>`;
                     }
-                    // STATUS: HAZIR (Onay Süreci)
                     else if(o.status === 'ready') {
                         if(o.waiter_ok && !o.customer_ok) {
-                            // Garson onaylamış, müşteri bekleniyor
                             btnHtml = `<div class="bg-orange-900/50 text-orange-200 text-center py-2 rounded text-xs border border-orange-500 animate-pulse">⏳ MÜŞTERİ ONAYI BEKLENİYOR</div>`;
                         } else if(!o.waiter_ok && o.customer_ok) {
-                             // Müşteri onaylamış, garson bekleniyor (Nadiren olur ama olsun)
                             btnHtml = `<button onclick="confirmDelivery(${o.id})" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded text-sm animate-pulse">MÜŞTERİ BEKLİYOR: TESLİM ET ✅</button>`;
                         } else {
-                            // İkisi de henüz onaylamamış
                             btnHtml = `<button onclick="confirmDelivery(${o.id})" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded text-sm">TESLİM ETTİM (ONAYLA) 📤</button>`;
                         }
                     }
