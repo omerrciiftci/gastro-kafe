@@ -53,7 +53,6 @@
         setInterval(()=>document.getElementById('clock').innerText=new Date().toLocaleTimeString(),1000);
         function toggleHistory(){ document.getElementById('history-view').classList.toggle('hidden'); }
 
-        // DURUM GÜNCELLE (Hazırla)
         async function setStatus(id, status) {
             await fetch(`/api/orders/${id}/status`, {
                 method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({status:status})
@@ -61,7 +60,6 @@
             loadOrders();
         }
 
-        // ÇİFT DOĞRULAMA (Garson Teslim Etti)
         async function confirmDelivery(id) {
             await fetch(`/api/orders/${id}/confirm`, {
                 method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({role:'waiter'})
@@ -77,24 +75,36 @@
                 const prep = [], ready = [], comp = [];
 
                 orders.forEach(o => {
+                    let btnHtml = '';
+                    
+                    // STATUS: HAZIRLANIYOR
+                    if(o.status === 'preparing') {
+                        btnHtml = `<button onclick="setStatus(${o.id}, 'ready')" class="w-full bg-yellow-600 text-white font-bold py-2 rounded text-sm hover:bg-yellow-500">HAZIRLA 🍳</button>`;
+                    }
+                    // STATUS: HAZIR (Onay Süreci)
+                    else if(o.status === 'ready') {
+                        if(o.waiter_ok && !o.customer_ok) {
+                            // Garson onaylamış, müşteri bekleniyor
+                            btnHtml = `<div class="bg-orange-900/50 text-orange-200 text-center py-2 rounded text-xs border border-orange-500 animate-pulse">⏳ MÜŞTERİ ONAYI BEKLENİYOR</div>`;
+                        } else if(!o.waiter_ok && o.customer_ok) {
+                             // Müşteri onaylamış, garson bekleniyor (Nadiren olur ama olsun)
+                            btnHtml = `<button onclick="confirmDelivery(${o.id})" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded text-sm animate-pulse">MÜŞTERİ BEKLİYOR: TESLİM ET ✅</button>`;
+                        } else {
+                            // İkisi de henüz onaylamamış
+                            btnHtml = `<button onclick="confirmDelivery(${o.id})" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded text-sm">TESLİM ETTİM (ONAYLA) 📤</button>`;
+                        }
+                    }
+
                     let card = `
                         <div class="bg-gray-700 p-3 rounded-lg shadow border-l-4 ${o.status==='preparing'?'border-yellow-500':(o.status==='ready'?'border-green-500':'border-gray-500')}">
                             <div class="flex justify-between mb-1"><span class="font-bold bg-white text-black px-1 rounded text-sm">${o.table_number}</span><span class="text-xs text-gray-400">#${o.id}</span></div>
                             <div class="font-bold text-lg">${o.customer_name}</div>
                             <div class="text-sm text-gray-300 mb-2 truncate">${o.items}</div>
-                            
-                            ${o.status === 'preparing' ? 
-                                `<button onclick="setStatus(${o.id}, 'ready')" class="w-full bg-yellow-600 text-white font-bold py-2 rounded text-sm">HAZIRLA 🍳</button>` : ''}
-                            
-                            ${o.status === 'ready' ? 
-                                (o.waiter_ok ? 
-                                    `<div class="bg-orange-900/50 text-orange-200 text-center py-2 rounded text-xs border border-orange-500 animate-pulse">⏳ MÜŞTERİ ONAYI BEKLENİYOR</div>` : 
-                                    `<button onclick="confirmDelivery(${o.id})" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded text-sm">TESLİM ETTİM ✅</button>`)
-                                : ''}
+                            ${btnHtml}
                         </div>`;
 
                     if(o.status === 'preparing') prep.push(card);
-                    else if(o.status === 'ready') ready.push(card); // Müşteri onayı bekleyenler de burada kalır
+                    else if(o.status === 'ready') ready.push(card); 
                     else if(o.status === 'completed') comp.push(card);
                 });
 
