@@ -2,7 +2,7 @@
 ================================================================
  PROJE ADI: Gastro İnegöl - Dijital Menü ve Sipariş Sistemi (API)
 ================================================================
- GELİŞTİRİCİ: Ömer Çiftçi
+ GELİŞTİRİCİ: Ömer Faruk Çiftci
  TARİH: 2023-2024
  MÜŞTERİ: İnegöl Belediyesi Sosyal Tesisleri
  
@@ -141,3 +141,4 @@ async def read_index(): return FileResponse('index.html')
 async def read_panel(): return FileResponse('panel.html')
 
 app.mount("/static", StaticFiles(directory="."), name="static")
+
