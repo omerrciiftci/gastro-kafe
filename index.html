@@ -168,4 +168,213 @@
         {id:'soguk', name_tr:'Soğuk İçecekler', name_en:'Cold Drinks'},
         {id:'yemek', name_tr:'Ana Yemekler', name_en:'Main Course'},
         {id:'atistir', name_tr:'Atıştırmalık', name_en:'Snacks'},
-        {id:'tatli
+        {id:'tatli', name_tr:'Tatlılar', name_en:'Desserts'}
+    ];
+
+    // 32 ADET ZENGİN MENÜ İÇERİĞİ
+    const menuItems = [
+        // SICAKLAR
+        {id:1, cat:'sicak', name_tr:'Çay', name_en:'Tea', price:15, img:'☕', desc_tr:'Taze demlenmiş Rize çayı', desc_en:'Fresh brewed black tea'},
+        {id:2, cat:'sicak', name_tr:'Fincan Çay', name_en:'Cup of Tea', price:25, img:'🍵', desc_tr:'Büyük fincanda', desc_en:'Large cup'},
+        {id:3, cat:'sicak', name_tr:'Türk Kahvesi', name_en:'Turkish Coffee', price:50, img:'🏺', desc_tr:'Çifte kavrulmuş, lokum ile', desc_en:'Traditional, with delight'},
+        {id:4, cat:'sicak', name_tr:'Dibek Kahvesi', name_en:'Dibek Coffee', price:55, img:'🏺', desc_tr:'Yumuşak içim, sütlü', desc_en:'Soft taste with milk'},
+        {id:5, cat:'sicak', name_tr:'Espresso', name_en:'Espresso', price:45, img:'☕', desc_tr:'Tek çekim yoğun kahve', desc_en:'Single shot'},
+        {id:6, cat:'sicak', name_tr:'Americano', name_en:'Americano', price:55, img:'☕', desc_tr:'Sıcak su ile inceltilmiş', desc_en:'Espresso with hot water'},
+        {id:7, cat:'sicak', name_tr:'Latte', name_en:'Latte', price:65, img:'🥛', desc_tr:'Bol sütlü espresso', desc_en:'Espresso with steamed milk'},
+        {id:8, cat:'sicak', name_tr:'Sahlep', name_en:'Salep', price:70, img:'🥛', desc_tr:'Tarçınlı kış lezzeti', desc_en:'Hot orchid root drink'},
+        
+        // SOĞUKLAR
+        {id:9, cat:'soguk', name_tr:'Su (33cl)', name_en:'Water', price:10, img:'💧', desc_tr:'Cam şişe', desc_en:'Glass bottle'},
+        {id:10, cat:'soguk', name_tr:'Maden Suyu', name_en:'Mineral Water', price:20, img:'🧊', desc_tr:'Doğal kaynak suyu', desc_en:'Natural mineral water'},
+        {id:11, cat:'soguk', name_tr:'Cola', name_en:'Coke', price:40, img:'🥤', desc_tr:'Kutu 330ml', desc_en:'Canned 330ml'},
+        {id:12, cat:'soguk', name_tr:'Fanta', name_en:'Fanta', price:40, img:'🍊', desc_tr:'Portakallı gazoz', desc_en:'Orange soda'},
+        {id:13, cat:'soguk', name_tr:'Ev Yapımı Limonata', name_en:'Homemade Lemonade', price:55, img:'🍋', desc_tr:'Naneli ve ferah', desc_en:'With fresh mint'},
+        {id:14, cat:'soguk', name_tr:'Ayran', name_en:'Ayran', price:25, img:'🥛', desc_tr:'Köpüklü yayık ayranı', desc_en:'Yoghurt drink'},
+        {id:15, cat:'soguk', name_tr:'Ice Latte', name_en:'Ice Latte', price:70, img:'🧊', desc_tr:'Buzlu sütlü kahve', desc_en:'Iced coffee with milk'},
+        {id:16, cat:'soguk', name_tr:'Churchill', name_en:'Churchill', price:35, img:'🍋', desc_tr:'Soda, limon, tuz', desc_en:'Soda, lemon, salt'},
+
+        // YEMEKLER
+        {id:17, cat:'yemek', name_tr:'İnegöl Köfte', name_en:'Inegol Meatballs', price:220, img:'🥩', desc_tr:'Meşhur İnegöl köftesi, pilav ile', desc_en:'Famous local meatballs'},
+        {id:18, cat:'yemek', name_tr:'Kaşarlı Köfte', name_en:'Cheese Meatballs', price:240, img:'🧀', desc_tr:'İçinde erimiş kaşar', desc_en:'Stuffed with cheese'},
+        {id:19, cat:'yemek', name_tr:'Hamburger', name_en:'Hamburger', price:180, img:'🍔', desc_tr:'150gr dana eti, patates ile', desc_en:'Beef burger with fries'},
+        {id:20, cat:'yemek', name_tr:'Cheeseburger', name_en:'Cheeseburger', price:200, img:'🍔', desc_tr:'Cheddar peynirli', desc_en:'With cheddar cheese'},
+        {id:21, cat:'yemek', name_tr:'Tavuk Izgara', name_en:'Grilled Chicken', price:170, img:'🍗', desc_tr:'Baharatlı tavuk but', desc_en:'Spiced chicken leg'},
+        {id:22, cat:'yemek', name_tr:'Köri Soslu Tavuk', name_en:'Curry Chicken', price:190, img:'🍛', desc_tr:'Özel köri soslu ve makarna', desc_en:'Curry sauce with pasta'},
+
+        // ATIŞTIRMALIK
+        {id:23, cat:'atistir', name_tr:'Kaşarlı Tost', name_en:'Cheese Toast', price:80, img:'🥪', desc_tr:'Özel tost ekmeğine', desc_en:'Grilled cheese sandwich'},
+        {id:24, cat:'atistir', name_tr:'Karışık Tost', name_en:'Mixed Toast', price:100, img:'🥪', desc_tr:'Sucuk ve kaşarlı', desc_en:'Sausage and cheese'},
+        {id:25, cat:'atistir', name_tr:'Patates Kızartması', name_en:'French Fries', price:70, img:'🍟', desc_tr:'Baharatlı parmak patates', desc_en:'Spicy fries'},
+        {id:26, cat:'atistir', name_tr:'Soğan Halkası', name_en:'Onion Rings', price:60, img:'🧅', desc_tr:'8 adet, sos ile', desc_en:'8 pcs with sauce'},
+        {id:27, cat:'atistir', name_tr:'Paçanga Böreği', name_en:'Pacanga Pastry', price:90, img:'🥟', desc_tr:'Pastırmalı çıtır börek', desc_en:'Pastrami pastry'},
+
+        // TATLILAR
+        {id:28, cat:'tatli', name_tr:'San Sebastian', name_en:'San Sebastian', price:120, img:'🍰', desc_tr:'Belçika çikolatası soslu', desc_en:'With chocolate sauce'},
+        {id:29, cat:'tatli', name_tr:'Magnolia', name_en:'Magnolia', price:90, img:'🍓', desc_tr:'Çilekli veya Muzlu', desc_en:'Strawberry or Banana'},
+        {id:30, cat:'tatli', name_tr:'Sufle', name_en:'Souffle', price:110, img:'🍫', desc_tr:'Sıcak akışkan çikolatalı', desc_en:'Hot chocolate lava cake'},
+        {id:31, cat:'tatli', name_tr:'Fıstıklı Baklava', name_en:'Baklava', price:150, img:'🍯', desc_tr:'3 Dilim, Gaziantep usulü', desc_en:'Pistachio baklava'},
+        {id:32, cat:'tatli', name_tr:'Dondurma (Top)', name_en:'Ice Cream', price:25, img:'🍦', desc_tr:'Sade, Kakao, Limon', desc_en:'Vanilla, Chocolate, Lemon'}
+    ];
+
+    let cart = [];
+    let activeOrderId = null;
+
+    function init() {
+        requestNotificationPermission();
+        
+        // KATEGORİLERİ DİLE GÖRE YAZDIR
+        const navHtml = categories.map((c,i) => {
+            const name = currentLang === 'tr' ? c.name_tr : c.name_en;
+            return `<button onclick="scrollCat('${c.id}',this)" class="cat-btn ${i===0?'active':''} px-5 py-2 rounded-full border border-gray-300 dark:border-gray-700 font-bold whitespace-nowrap transition text-sm">${name}</button>`
+        }).join('');
+        document.getElementById('category-nav').innerHTML = navHtml;
+
+        // ÜRÜNLERİ DİLE GÖRE YAZDIR
+        const containerHtml = categories.map(cat => {
+            const items = menuItems.filter(i=>i.cat===cat.id);
+            if(!items.length) return '';
+            const catName = currentLang === 'tr' ? cat.name_tr : cat.name_en;
+            
+            return `<div id="${cat.id}" class="mb-8 scroll-mt-24">
+                <h3 class="font-bold text-xl mb-4 text-[var(--brand-color)] border-l-4 border-[var(--brand-color)] pl-3">${catName}</h3>
+                <div class="grid gap-3">
+                    ${items.map(i => {
+                        const iName = currentLang === 'tr' ? i.name_tr : i.name_en;
+                        const iDesc = currentLang === 'tr' ? i.desc_tr : i.desc_en;
+                        return `
+                        <div class="glass-card p-3 rounded-xl flex justify-between items-center shadow-sm relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition pointer-events-none"></div>
+                            <div class="flex items-center gap-3 relative z-10 pointer-events-none w-full">
+                                <div class="text-3xl bg-gray-100 dark:bg-gray-800 w-14 h-14 flex items-center justify-center rounded-lg shadow-inner">${i.img}</div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-bold dark:text-white truncate">${iName}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 truncate">${iDesc}</div>
+                                    <div class="text-[var(--brand-color)] font-bold mt-1">${i.price} ₺</div>
+                                </div>
+                            </div>
+                            <button onclick="add(${i.id})" class="relative z-20 bg-gray-200 dark:bg-gray-700 w-10 h-10 rounded-full font-bold text-xl text-[var(--brand-color)] hover:bg-[var(--brand-color)] hover:text-white transition shadow-md flex-shrink-0">+</button>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>`;
+        }).join('');
+        document.getElementById('menu-container').innerHTML = containerHtml;
+    }
+
+    function changeLang(lang) {
+        currentLang = lang;
+        document.querySelectorAll('[data-lang]').forEach(el => {
+            const key = el.getAttribute('data-lang');
+            if(translations[lang][key]) el.innerText = translations[lang][key];
+        });
+        init(); // Menüyü yeniden oluştur
+        updateCart(); // Sepet dilini güncellemeye gerek yok (rakamlar aynı) ama butonları yeniler
+    }
+
+    // DİĞER FONKSİYONLAR (AYNI)
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    function setTheme(mode) { 
+        if(mode==='dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); 
+        localStorage.setItem('theme', mode);
+    }
+    function setColor(color) { 
+        document.documentElement.style.setProperty('--brand-color', color); 
+        localStorage.setItem('brandColor', color);
+    }
+    if(localStorage.getItem('theme')==='dark') setTheme('dark');
+    if(localStorage.getItem('brandColor')) setColor(localStorage.getItem('brandColor'));
+    
+    window.scrollCat=(id,b)=>{document.getElementById(id).scrollIntoView({behavior:'smooth'});document.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};
+    
+    window.add=(id)=>{
+        const item = menuItems.find(i=>i.id===id);
+        cart.push(item);
+        if(navigator.vibrate) navigator.vibrate(50);
+        updateCart();
+    };
+
+    function updateCart(){
+        const b=document.getElementById('cart-bar');
+        if(cart.length>0){
+            b.classList.remove('translate-y-[150%]');
+            document.getElementById('total-price').innerText=cart.reduce((a,b)=>a+b.price,0)+' ₺';
+            document.getElementById('cart-badge').innerText=cart.length;
+            document.getElementById('cart-badge').classList.remove('hidden');
+        }
+    }
+
+    window.openPaymentModal=()=>document.getElementById('payment-modal').classList.remove('hidden');
+    window.closePaymentModal=()=>document.getElementById('payment-modal').classList.add('hidden');
+
+    window.processOrder = async () => {
+        const name = document.getElementById('customer-name').value;
+        const table = document.getElementById('table-no').value;
+        if(!name) { alert(currentLang==='tr'?"İsim giriniz!":"Enter name!"); return; }
+
+        // MUTFAĞA HEP TÜRKÇE İSİMLERİ GÖNDERİYORUZ (Hasan Usta anlasın diye)
+        const itemsForKitchen = cart.map(i => i.name_tr).join(', ');
+
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    customer_name: name, 
+                    table_number: table, 
+                    items: itemsForKitchen, // <-- KRİTİK NOKTA: Mutfak Türkçe görür
+                    total_price: cart.reduce((a,b)=>a+b.price,0)
+                })
+            });
+            const data = await res.json();
+            if(data.status === 'success') {
+                closePaymentModal();
+                activeOrderId = data.order_id;
+                cart = [];
+                document.getElementById('cart-bar').classList.add('translate-y-[150%]');
+                document.getElementById('preparing-view').classList.remove('hidden');
+                startStatusCheck();
+            }
+        } catch(e) { alert("Error"); }
+    };
+
+    function startStatusCheck() {
+        const check = setInterval(async () => {
+            if(!activeOrderId) { clearInterval(check); return; }
+            try {
+                const res = await fetch(`/api/orders/${activeOrderId}`);
+                const order = await res.json();
+                
+                if(order.status === 'completed') {
+                    document.getElementById('ready-view').classList.add('hidden');
+                    alert(currentLang==='tr' ? "Afiyet olsun! İşlem tamam." : "Enjoy! Order completed.");
+                    location.reload();
+                }
+                else if(order.status === 'ready') {
+                    document.getElementById('preparing-view').classList.add('hidden');
+                    document.getElementById('ready-view').classList.remove('hidden');
+                    if(order.customer_ok) {
+                        document.getElementById('btn-received').classList.add('hidden');
+                        document.getElementById('waiting-waiter-msg').classList.remove('hidden');
+                    } else {
+                        if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                    }
+                }
+            } catch(e) {}
+        }, 3000);
+    }
+
+    window.confirmReceived = async () => {
+        if(!activeOrderId) return;
+        try {
+            await fetch(`/api/orders/${activeOrderId}/confirm`, {
+                method: 'PUT', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({role: 'customer'})
+            });
+            document.getElementById('btn-received').classList.add('hidden');
+            document.getElementById('waiting-waiter-msg').classList.remove('hidden');
+        } catch(e) { alert("Error"); }
+    };
+
+    init();
+  </script>
+</body>
+</html>
