@@ -5,22 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Gastro Kafe</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brand: 'var(--brand-color)' } } } }
-  </script>
+  <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{brand:'var(--brand-color)'}}}}</script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
   <style>
-    :root { --brand-color: #ea580c; } /* Varsayılan Turuncu */
+    :root { --brand-color: #ea580c; }
     body { font-family: 'Outfit', sans-serif; transition: background-color 0.3s, color 0.3s; }
-    .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-    .dark .glass-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.05); }
-    
+    .glass-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+    .dark .glass-card { background: rgba(30,41,59,0.7); border: 1px solid rgba(255,255,255,0.05); }
     .hide-scroll::-webkit-scrollbar { display: none; }
-    .cat-btn.active { background: var(--brand-color); color: white; border:none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    
-    /* Yan Menü Animasyonu */
+    .cat-btn.active { background: var(--brand-color); color: white; border:none; }
     #sidebar { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
     #sidebar.open { transform: translateX(0); }
+    .credit-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 pb-32">
@@ -29,7 +25,7 @@
     <div class="p-4 flex justify-between items-center">
         <div>
             <h2 class="font-bold text-xl text-brand">Gastro Kafe</h2>
-            <div class="text-xs text-gray-500 dark:text-gray-400">Hoşgeldiniz</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400" data-lang="welcome">Hoşgeldiniz</div>
         </div>
         <button onclick="toggleSidebar()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-800">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
@@ -38,28 +34,36 @@
     <div class="flex overflow-x-auto gap-3 p-4 pt-0 hide-scroll" id="category-nav"></div>
   </div>
 
-  <div id="sidebar" class="fixed inset-y-0 right-0 w-64 bg-white dark:bg-gray-800 shadow-2xl z-[100] p-6">
+  <div id="sidebar" class="fixed inset-y-0 right-0 w-72 bg-white dark:bg-gray-800 shadow-2xl z-[100] p-6">
     <div class="flex justify-between items-center mb-8">
-        <h3 class="font-bold text-xl">Ayarlar</h3>
+        <h3 class="font-bold text-xl" data-lang="settings">Ayarlar</h3>
         <button onclick="toggleSidebar()" class="text-2xl">&times;</button>
     </div>
     
     <div class="space-y-6">
         <div>
-            <h4 class="text-sm font-bold text-gray-500 mb-2">Tema Modu</h4>
-            <div class="flex gap-2 p-1 bg-gray-200 dark:bg-gray-700 rounded-xl">
-                <button onclick="setTheme('light')" class="flex-1 py-2 rounded-lg text-sm font-bold bg-white dark:bg-transparent shadow-sm dark:shadow-none">☀️ Açık</button>
-                <button onclick="setTheme('dark')" class="flex-1 py-2 rounded-lg text-sm font-bold dark:bg-gray-600">🌙 Koyu</button>
+            <h4 class="text-sm font-bold text-gray-500 mb-2">Language / Dil</h4>
+            <div class="flex gap-2">
+                <button onclick="changeLang('tr')" class="flex-1 py-2 rounded-lg border border-gray-300 dark:border-gray-600 font-bold">🇹🇷 TR</button>
+                <button onclick="changeLang('en')" class="flex-1 py-2 rounded-lg border border-gray-300 dark:border-gray-600 font-bold">🇬🇧 EN</button>
             </div>
         </div>
 
         <div>
-            <h4 class="text-sm font-bold text-gray-500 mb-2">Tema Rengi</h4>
+            <h4 class="text-sm font-bold text-gray-500 mb-2" data-lang="theme">Tema</h4>
+            <div class="flex gap-2 p-1 bg-gray-200 dark:bg-gray-700 rounded-xl">
+                <button onclick="setTheme('light')" class="flex-1 py-2 rounded-lg text-sm font-bold bg-white dark:bg-transparent shadow-sm dark:shadow-none">☀️</button>
+                <button onclick="setTheme('dark')" class="flex-1 py-2 rounded-lg text-sm font-bold dark:bg-gray-600">🌙</button>
+            </div>
+        </div>
+        
+        <div>
+            <h4 class="text-sm font-bold text-gray-500 mb-2" data-lang="color">Renk</h4>
             <div class="grid grid-cols-4 gap-2">
-                <button onclick="setColor('#ea580c')" class="w-10 h-10 rounded-full bg-orange-600 border-2 border-transparent focus:border-white"></button>
-                <button onclick="setColor('#2563eb')" class="w-10 h-10 rounded-full bg-blue-600 border-2 border-transparent focus:border-white"></button>
-                <button onclick="setColor('#7c3aed')" class="w-10 h-10 rounded-full bg-purple-600 border-2 border-transparent focus:border-white"></button>
-                <button onclick="setColor('#16a34a')" class="w-10 h-10 rounded-full bg-green-600 border-2 border-transparent focus:border-white"></button>
+                <button onclick="setColor('#ea580c')" class="w-10 h-10 rounded-full bg-orange-600"></button>
+                <button onclick="setColor('#2563eb')" class="w-10 h-10 rounded-full bg-blue-600"></button>
+                <button onclick="setColor('#7c3aed')" class="w-10 h-10 rounded-full bg-purple-600"></button>
+                <button onclick="setColor('#16a34a')" class="w-10 h-10 rounded-full bg-green-600"></button>
             </div>
         </div>
     </div>
@@ -69,11 +73,11 @@
 
   <div id="cart-bar" class="fixed bottom-4 left-4 right-4 glass-card p-4 rounded-2xl shadow-xl transform translate-y-[150%] transition-transform duration-300 z-50 flex justify-between items-center bg-white dark:bg-gray-800">
     <div class="flex flex-col">
-        <span class="text-xs text-gray-500 dark:text-gray-400">Toplam Tutar</span>
+        <span class="text-xs text-gray-500 dark:text-gray-400" data-lang="total">Toplam</span>
         <span class="text-2xl font-bold dark:text-white" id="total-price">0 ₺</span>
     </div>
     <button onclick="openPaymentModal()" class="bg-[var(--brand-color)] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg active:scale-95 transition">
-        <span>Sepeti Onayla</span>
+        <span data-lang="confirm_cart">Sepeti Onayla</span>
         <span id="cart-badge" class="bg-white text-[var(--brand-color)] text-xs px-2 py-0.5 rounded-full font-extrabold hidden">0</span>
     </button>
   </div>
@@ -81,9 +85,29 @@
   <div id="payment-modal" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
     <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-[slideUp_0.3s]">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold dark:text-white">Sipariş Bilgileri</h2>
+            <h2 class="text-xl font-bold dark:text-white" data-lang="payment_title">Ödeme Bilgileri</h2>
             <button onclick="closePaymentModal()" class="text-gray-400 text-2xl">&times;</button>
         </div>
+        
+        <div class="credit-card text-white p-6 rounded-2xl mb-6 shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 right-0 -m-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+            <div class="flex justify-between items-center mb-8">
+                <span class="text-xs opacity-70">Credit Card</span>
+                <span class="font-bold italic">VISA</span>
+            </div>
+            <div class="text-2xl font-mono mb-4 tracking-widest">**** **** **** 4289</div>
+            <div class="flex justify-between">
+                <div>
+                    <div class="text-[10px] opacity-70">Card Holder</div>
+                    <div class="text-sm font-bold">MÜŞTERİ ADI</div>
+                </div>
+                <div>
+                    <div class="text-[10px] opacity-70">Expires</div>
+                    <div class="text-sm font-bold">12/28</div>
+                </div>
+            </div>
+        </div>
+
         <div class="space-y-4">
             <input type="text" id="customer-name" class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl p-4 outline-none border-2 border-transparent focus:border-[var(--brand-color)]" placeholder="Adınız Soyadınız">
             <select id="table-no" class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl p-4 outline-none">
@@ -92,47 +116,83 @@
                 <option value="Masa 3">Masa 3</option>
                 <option value="Bahçe 1">Bahçe 1</option>
             </select>
-            <button onclick="processOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg">Siparişi Gönder</button>
+            <button onclick="processOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg flex justify-center items-center gap-2">
+                <span data-lang="pay_btn">Ödeme Yap ve Sipariş Ver</span> 🔒
+            </button>
         </div>
     </div>
   </div>
 
   <div id="preparing-view" class="fixed inset-0 bg-yellow-500 z-[70] hidden flex flex-col items-center justify-center p-8 text-center text-white">
     <div class="w-24 h-24 border-8 border-white border-t-transparent rounded-full animate-spin mb-6"></div>
-    <h2 class="text-3xl font-bold mb-2">Hazırlanıyor...</h2>
-    <p class="text-yellow-100 text-lg">Usta iş başında! Hazır olunca sana haber vereceğim.</p>
+    <h2 class="text-3xl font-bold mb-2" data-lang="prep_title">Hazırlanıyor...</h2>
+    <p class="text-yellow-100 text-lg" data-lang="prep_desc">Usta iş başında! Hazır olunca sana haber vereceğim.</p>
   </div>
 
   <div id="ready-view" class="fixed inset-0 bg-green-600 z-[80] hidden flex flex-col items-center justify-center p-8 text-center text-white">
     <div class="text-6xl mb-6 animate-bounce">🔔</div>
-    <h2 class="text-4xl font-bold mb-4">SİPARİŞ HAZIR!</h2>
-    <p class="text-green-100 text-lg mb-8">Lütfen mutfak bankosundan teslim al.</p>
+    <h2 class="text-4xl font-bold mb-4" data-lang="ready_title">SİPARİŞ HAZIR!</h2>
+    <p class="text-green-100 text-lg mb-8" id="ready-msg" data-lang="ready_desc">Lütfen mutfak bankosundan teslim al.</p>
     
-    <button onclick="confirmReceived()" class="bg-white text-green-700 px-10 py-5 rounded-2xl font-bold text-xl shadow-2xl hover:scale-105 transition">
-        ✅ Teslim Aldım
+    <button id="btn-received" onclick="confirmReceived()" class="bg-white text-green-700 px-10 py-5 rounded-2xl font-bold text-xl shadow-2xl hover:scale-105 transition">
+        <span data-lang="btn_received">✅ Teslim Aldım</span>
     </button>
+    
+    <div id="waiting-waiter-msg" class="hidden mt-4 bg-green-800/50 p-4 rounded-xl animate-pulse">
+        <span data-lang="wait_waiter">⏳ Garson onayı bekleniyor...</span>
+    </div>
   </div>
 
   <script>
-    // TEMA AYARLARI
+    // --- ÇOKLU DİL SİSTEMİ ---
+    const translations = {
+        tr: {
+            welcome: "Hoşgeldiniz", settings: "Ayarlar", theme: "Tema", color: "Renk", total: "Toplam",
+            confirm_cart: "Sepeti Onayla", payment_title: "Ödeme Bilgileri", pay_btn: "Ödeme Yap ve Sipariş Ver",
+            prep_title: "Hazırlanıyor...", prep_desc: "Usta iş başında! Hazır olunca bildirim gelecek.",
+            ready_title: "SİPARİŞ HAZIR!", ready_desc: "Lütfen mutfak bankosundan teslim al.",
+            btn_received: "✅ Teslim Aldım", wait_waiter: "⏳ Garson onayı bekleniyor..."
+        },
+        en: {
+            welcome: "Welcome", settings: "Settings", theme: "Theme", color: "Color", total: "Total",
+            confirm_cart: "Confirm Order", payment_title: "Payment Details", pay_btn: "Pay & Order",
+            prep_title: "Preparing...", prep_desc: "Chef is cooking! We will notify you.",
+            ready_title: "ORDER READY!", ready_desc: "Please pick up from the counter.",
+            btn_received: "✅ Received", wait_waiter: "⏳ Waiting for Waiter..."
+        }
+    };
+    let currentLang = 'tr';
+
+    function changeLang(lang) {
+        currentLang = lang;
+        document.querySelectorAll('[data-lang]').forEach(el => {
+            const key = el.getAttribute('data-lang');
+            if(translations[lang][key]) el.innerText = translations[lang][key];
+        });
+        // Kategorileri güncelle (Basit çözüm: reload yerine text değişimi)
+        init(); 
+    }
+
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-    function setTheme(mode) {
-        if(mode==='dark') document.documentElement.classList.add('dark');
-        else document.documentElement.classList.remove('dark');
+    function setTheme(mode) { 
+        if(mode==='dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); 
         localStorage.setItem('theme', mode);
     }
-    function setColor(color) {
-        document.documentElement.style.setProperty('--brand-color', color);
+    function setColor(color) { 
+        document.documentElement.style.setProperty('--brand-color', color); 
         localStorage.setItem('brandColor', color);
     }
-    // Kayıtlı ayarları yükle
     if(localStorage.getItem('theme')==='dark') setTheme('dark');
     if(localStorage.getItem('brandColor')) setColor(localStorage.getItem('brandColor'));
 
-    // --- BİLDİRİM İZNİ ---
     function requestNotificationPermission() { if ("Notification" in window) Notification.requestPermission(); }
 
-    const categories = [{id:'sicak',name:'Sıcaklar'},{id:'soguk',name:'Soğuklar'},{id:'tatli',name:'Tatlılar'},{id:'yemek',name:'Yemek'}];
+    const categories = [
+        {id:'sicak', name_tr:'Sıcaklar', name_en:'Hot Drinks'},
+        {id:'soguk', name_tr:'Soğuklar', name_en:'Cold Drinks'},
+        {id:'tatli', name_tr:'Tatlılar', name_en:'Desserts'},
+        {id:'yemek', name_tr:'Yemek', name_en:'Food'}
+    ];
     const menuItems = [
         {id:1,cat:'sicak',name:'Çay',price:25,img:'☕'}, {id:2,cat:'sicak',name:'Latte',price:65,img:'🥛'},
         {id:3,cat:'soguk',name:'Limonata',price:55,img:'🍋'}, {id:4,cat:'tatli',name:'Cheesecake',price:120,img:'🍰'},
@@ -144,11 +204,17 @@
 
     function init() {
         requestNotificationPermission();
-        document.getElementById('category-nav').innerHTML = categories.map((c,i)=>`<button onclick="scrollCat('${c.id}',this)" class="cat-btn ${i===0?'active':''} px-5 py-2 rounded-full border border-gray-300 dark:border-gray-700 font-bold whitespace-nowrap transition text-sm">${c.name}</button>`).join('');
-        document.getElementById('menu-container').innerHTML = categories.map(cat => {
+        const navHtml = categories.map((c,i) => {
+            const name = currentLang === 'tr' ? c.name_tr : c.name_en;
+            return `<button onclick="scrollCat('${c.id}',this)" class="cat-btn ${i===0?'active':''} px-5 py-2 rounded-full border border-gray-300 dark:border-gray-700 font-bold whitespace-nowrap transition text-sm">${name}</button>`
+        }).join('');
+        document.getElementById('category-nav').innerHTML = navHtml;
+
+        const containerHtml = categories.map(cat => {
             const items = menuItems.filter(i=>i.cat===cat.id);
-            if(!items.length)return'';
-            return `<div id="${cat.id}" class="mb-8 scroll-mt-24"><h3 class="font-bold text-xl mb-4 text-[var(--brand-color)]">${cat.name}</h3><div class="grid gap-3">${items.map(i=>`
+            if(!items.length) return '';
+            const catName = currentLang === 'tr' ? cat.name_tr : cat.name_en;
+            return `<div id="${cat.id}" class="mb-8 scroll-mt-24"><h3 class="font-bold text-xl mb-4 text-[var(--brand-color)]">${catName}</h3><div class="grid gap-3">${items.map(i=>`
                 <div class="glass-card p-3 rounded-xl flex justify-between items-center shadow-sm">
                     <div class="flex items-center gap-3">
                         <div class="text-3xl bg-gray-100 dark:bg-gray-800 w-12 h-12 flex items-center justify-center rounded-lg">${i.img}</div>
@@ -157,6 +223,7 @@
                     <button onclick="add(${i.id})" class="bg-gray-200 dark:bg-gray-700 w-10 h-10 rounded-full font-bold text-xl text-[var(--brand-color)]">+</button>
                 </div>`).join('')}</div></div>`;
         }).join('');
+        document.getElementById('menu-container').innerHTML = containerHtml;
     }
 
     window.scrollCat=(id,b)=>{document.getElementById(id).scrollIntoView({behavior:'smooth'});document.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};
@@ -177,7 +244,7 @@
     window.processOrder = async () => {
         const name = document.getElementById('customer-name').value;
         const table = document.getElementById('table-no').value;
-        if(!name) { alert("İsim giriniz!"); return; }
+        if(!name) { alert(currentLang==='tr'?"İsim giriniz!":"Enter name!"); return; }
 
         try {
             const res = await fetch('/api/orders', {
@@ -190,11 +257,10 @@
                 activeOrderId = data.order_id;
                 cart = [];
                 document.getElementById('cart-bar').classList.add('translate-y-[150%]');
-                // BEKLEME EKRANINI AÇ
                 document.getElementById('preparing-view').classList.remove('hidden');
                 startStatusCheck();
             }
-        } catch(e) { alert("Hata"); }
+        } catch(e) { alert("Error"); }
     };
 
     function startStatusCheck() {
@@ -204,31 +270,42 @@
                 const res = await fetch(`/api/orders/${activeOrderId}`);
                 const order = await res.json();
                 
-                if(order.status === 'ready') {
-                    // HAZIR EKRANI AÇ, BEKLEMEYİ KAPAT
+                // Sipariş Tamamen Bitti mi?
+                if(order.status === 'completed') {
+                    document.getElementById('ready-view').classList.add('hidden');
+                    alert(currentLang==='tr' ? "Afiyet olsun! İşlem tamam." : "Enjoy! Order completed.");
+                    location.reload();
+                }
+                // Sipariş Hazır Ama Onay Bekliyor mu?
+                else if(order.status === 'ready') {
                     document.getElementById('preparing-view').classList.add('hidden');
                     document.getElementById('ready-view').classList.remove('hidden');
                     
-                    if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 500]);
-                    if (Notification.permission === "granted") new Notification("HAZIR! 🔔", {body: "Siparişiniz hazır, afiyet olsun!", vibrate: [200, 100, 200]});
-                    
-                    clearInterval(check); // Artık sorgulamayı bırak, kullanıcıdan onay bekle
+                    // Eğer müşteri zaten onayladıysa ama garson onaylamadıysa:
+                    if(order.customer_ok) {
+                        document.getElementById('btn-received').classList.add('hidden');
+                        document.getElementById('waiting-waiter-msg').classList.remove('hidden');
+                    } else {
+                        // Henüz müşteri onaylamadı
+                        if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                    }
                 }
             } catch(e) {}
         }, 3000);
     }
 
-    // MÜŞTERİ "TESLİM ALDIM" DEYİNCE
     window.confirmReceived = async () => {
         if(!activeOrderId) return;
         try {
+            // Müşteri "Aldım" dedi
             await fetch(`/api/orders/${activeOrderId}/confirm`, {
                 method: 'PUT', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({role: 'customer'})
             });
-            alert("Afiyet olsun! Yine bekleriz.");
-            location.reload();
-        } catch(e) { alert("Onay hatası"); }
+            // Ekranda değişikliği göstermek için status check döngüsünü beklemiyoruz, hemen UI güncelliyoruz
+            document.getElementById('btn-received').classList.add('hidden');
+            document.getElementById('waiting-waiter-msg').classList.remove('hidden');
+        } catch(e) { alert("Error"); }
     };
 
     init();
