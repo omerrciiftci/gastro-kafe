@@ -1,3 +1,18 @@
+"""
+================================================================
+ PROJE ADI: Gastro İnegöl - Dijital Menü ve Sipariş Sistemi (API)
+================================================================
+ GELİŞTİRİCİ: Ömer Çiftçi
+ TARİH: 2023-2024
+ MÜŞTERİ: İnegöl Belediyesi Sosyal Tesisleri
+ 
+ AÇIKLAMA:
+ Bu yazılım, FastAPI ve SQLAlchemy kullanılarak geliştirilmiş
+ gerçek zamanlı bir restoran sipariş yönetim backend servisidir.
+ Tüm hakları saklıdır.
+================================================================
+"""
+
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,10 +21,10 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
-from datetime import datetime, date
+from datetime import datetime
 import os
 
-app = FastAPI()
+app = FastAPI(title="Gastro İnegöl API", description="Developed by Ömer Çiftçi", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,13 +34,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# DB AYARLARI
+# VERİTABANI AYARLARI
 SQLALCHEMY_DATABASE_URL = "sqlite:///./kafe_sistemi.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# TABLO GÜNCELLENDİ: Çift Doğrulama İçin Yeni Alanlar
+# TABLO YAPISI
 class OrderDB(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True, index=True)
@@ -34,12 +49,13 @@ class OrderDB(Base):
     items = Column(String)
     total_price = Column(Float)
     status = Column(String, default="preparing") # preparing, ready, completed
-    waiter_ok = Column(Boolean, default=False)   # Garson Teslim Ettim dedi mi?
-    customer_ok = Column(Boolean, default=False) # Müşteri Aldım dedi mi?
+    waiter_ok = Column(Boolean, default=False)
+    customer_ok = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.now)
 
 Base.metadata.create_all(bind=engine)
 
+# VERİ MODELLERİ
 class OrderSchema(BaseModel):
     customer_name: str
     table_number: str
@@ -49,9 +65,8 @@ class OrderSchema(BaseModel):
 class StatusUpdate(BaseModel):
     status: str
 
-# Çift Doğrulama Modeli
 class ConfirmSchema(BaseModel):
-    role: str # 'waiter' veya 'customer'
+    role: str
 
 def get_db():
     db = SessionLocal()
@@ -60,7 +75,7 @@ def get_db():
     finally:
         db.close()
 
-# --- API ---
+# --- API ENDPOINTLERİ ---
 
 @app.post("/api/orders")
 def create_order(order: OrderSchema, db: Session = Depends(get_db)):
@@ -93,30 +108,26 @@ def get_history(date_str: str, db: Session = Depends(get_db)):
 @app.get("/api/orders/{order_id}")
 def get_single_order(order_id: int, db: Session = Depends(get_db)):
     order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
-    if not order: raise HTTPException(status_code=404, detail="Sipariş yok")
+    if not order: raise HTTPException(404, "Sipariş bulunamadı")
     return order
 
-# Sadece Durum Güncelleme (Hazırla butonu için)
 @app.put("/api/orders/{order_id}/status")
 def update_status(order_id: int, data: StatusUpdate, db: Session = Depends(get_db)):
     order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
-    if not order: raise HTTPException(404, "Yok")
     order.status = data.status
     db.commit()
     return {"status": "updated"}
 
-# YENİ: ÇİFT DOĞRULAMA API'Sİ
 @app.put("/api/orders/{order_id}/confirm")
 def confirm_order(order_id: int, data: ConfirmSchema, db: Session = Depends(get_db)):
     order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
-    if not order: raise HTTPException(404, "Yok")
-
+    
     if data.role == 'waiter':
         order.waiter_ok = True
     elif data.role == 'customer':
         order.customer_ok = True
     
-    # İkisi de TRUE ise Completed yap
+    # İKİ TARAF DA ONAYLADIYSA SİPARİŞİ TAMAMLA
     if order.waiter_ok and order.customer_ok:
         order.status = 'completed'
     
