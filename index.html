@@ -143,6 +143,13 @@
   </div>
 
   <script>
+    // --- BU FONKSİYON EKSİKTİ, ŞİMDİ EKLENDİ! ---
+    function requestNotificationPermission() {
+        if ("Notification" in window) {
+            Notification.requestPermission();
+        }
+    }
+
     // --- ÇOKLU DİL VE İÇERİK ---
     const translations = {
         tr: {
@@ -220,7 +227,7 @@
     let activeOrderId = null;
 
     function init() {
-        requestNotificationPermission();
+        requestNotificationPermission(); // ARTIK HATA VERMEYECEK
         
         // KATEGORİLERİ DİLE GÖRE YAZDIR
         const navHtml = categories.map((c,i) => {
@@ -271,7 +278,7 @@
         updateCart(); // Sepet dilini güncellemeye gerek yok (rakamlar aynı) ama butonları yeniler
     }
 
-    // DİĞER FONKSİYONLAR (AYNI)
+    // DİĞER FONKSİYONLAR
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     function setTheme(mode) { 
         if(mode==='dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); 
@@ -311,7 +318,7 @@
         const table = document.getElementById('table-no').value;
         if(!name) { alert(currentLang==='tr'?"İsim giriniz!":"Enter name!"); return; }
 
-        // MUTFAĞA HEP TÜRKÇE İSİMLERİ GÖNDERİYORUZ (Hasan Usta anlasın diye)
+        // MUTFAĞA HEP TÜRKÇE İSİMLERİ GÖNDERİYORUZ
         const itemsForKitchen = cart.map(i => i.name_tr).join(', ');
 
         try {
@@ -320,7 +327,7 @@
                 body: JSON.stringify({
                     customer_name: name, 
                     table_number: table, 
-                    items: itemsForKitchen, // <-- KRİTİK NOKTA: Mutfak Türkçe görür
+                    items: itemsForKitchen, 
                     total_price: cart.reduce((a,b)=>a+b.price,0)
                 })
             });
