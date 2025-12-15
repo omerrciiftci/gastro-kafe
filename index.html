@@ -24,7 +24,7 @@
   <div class="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
     <div class="p-4 flex justify-between items-center">
         <div>
-            <h2 class="font-bold text-xl text-brand">Gastro Kafe</h2>
+            <h2 class="font-bold text-xl text-brand">Gastro İnegöl</h2>
             <div class="text-xs text-gray-500 dark:text-gray-400" data-lang="welcome">Hoşgeldiniz</div>
         </div>
         <button onclick="toggleSidebar()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-800">
@@ -44,8 +44,8 @@
         <div>
             <h4 class="text-sm font-bold text-gray-500 mb-2">Language / Dil</h4>
             <div class="flex gap-2">
-                <button onclick="changeLang('tr')" class="flex-1 py-2 rounded-lg border border-gray-300 dark:border-gray-600 font-bold">🇹🇷 TR</button>
-                <button onclick="changeLang('en')" class="flex-1 py-2 rounded-lg border border-gray-300 dark:border-gray-600 font-bold">🇬🇧 EN</button>
+                <button onclick="changeLang('tr')" class="flex-1 py-2 rounded-lg border border-gray-300 dark:border-gray-600 font-bold hover:bg-gray-100 dark:hover:bg-gray-700">🇹🇷 TR</button>
+                <button onclick="changeLang('en')" class="flex-1 py-2 rounded-lg border border-gray-300 dark:border-gray-600 font-bold hover:bg-gray-100 dark:hover:bg-gray-700">🇬🇧 EN</button>
             </div>
         </div>
 
@@ -95,28 +95,29 @@
                 <span class="text-xs opacity-70">Credit Card</span>
                 <span class="font-bold italic">VISA</span>
             </div>
-            <div class="text-2xl font-mono mb-4 tracking-widest">**** **** **** 4289</div>
+            <div class="text-2xl font-mono mb-4 tracking-widest">**** **** **** 1453</div>
             <div class="flex justify-between">
                 <div>
-                    <div class="text-[10px] opacity-70">Card Holder</div>
-                    <div class="text-sm font-bold">MÜŞTERİ ADI</div>
+                    <div class="text-[10px] opacity-70">Holder</div>
+                    <div class="text-sm font-bold">MÜŞTERİ</div>
                 </div>
                 <div>
-                    <div class="text-[10px] opacity-70">Expires</div>
+                    <div class="text-[10px] opacity-70">Exp</div>
                     <div class="text-sm font-bold">12/28</div>
                 </div>
             </div>
         </div>
 
         <div class="space-y-4">
-            <input type="text" id="customer-name" class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl p-4 outline-none border-2 border-transparent focus:border-[var(--brand-color)]" placeholder="Adınız Soyadınız">
+            <input type="text" id="customer-name" class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl p-4 outline-none border-2 border-transparent focus:border-[var(--brand-color)]" placeholder="Adınız Soyadınız / Name">
             <select id="table-no" class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl p-4 outline-none">
-                <option value="Masa 1">Masa 1</option>
-                <option value="Masa 2">Masa 2</option>
-                <option value="Masa 3">Masa 3</option>
-                <option value="Bahçe 1">Bahçe 1</option>
+                <option value="Masa 1">Masa / Table 1</option>
+                <option value="Masa 2">Masa / Table 2</option>
+                <option value="Masa 3">Masa / Table 3</option>
+                <option value="Bahçe 1">Bahçe / Garden 1</option>
+                <option value="Bahçe 2">Bahçe / Garden 2</option>
             </select>
-            <button onclick="processOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg flex justify-center items-center gap-2">
+            <button onclick="processOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg flex justify-center items-center gap-2 hover:bg-green-500 transition">
                 <span data-lang="pay_btn">Ödeme Yap ve Sipariş Ver</span> 🔒
             </button>
         </div>
@@ -126,189 +127,45 @@
   <div id="preparing-view" class="fixed inset-0 bg-yellow-500 z-[70] hidden flex flex-col items-center justify-center p-8 text-center text-white">
     <div class="w-24 h-24 border-8 border-white border-t-transparent rounded-full animate-spin mb-6"></div>
     <h2 class="text-3xl font-bold mb-2" data-lang="prep_title">Hazırlanıyor...</h2>
-    <p class="text-yellow-100 text-lg" data-lang="prep_desc">Usta iş başında! Hazır olunca sana haber vereceğim.</p>
+    <p class="text-yellow-100 text-lg" data-lang="prep_desc">Siparişiniz mutfağa iletildi.</p>
   </div>
 
   <div id="ready-view" class="fixed inset-0 bg-green-600 z-[80] hidden flex flex-col items-center justify-center p-8 text-center text-white">
     <div class="text-6xl mb-6 animate-bounce">🔔</div>
     <h2 class="text-4xl font-bold mb-4" data-lang="ready_title">SİPARİŞ HAZIR!</h2>
-    <p class="text-green-100 text-lg mb-8" id="ready-msg" data-lang="ready_desc">Lütfen mutfak bankosundan teslim al.</p>
-    
+    <p class="text-green-100 text-lg mb-8" data-lang="ready_desc">Lütfen mutfak bankosundan teslim alınız.</p>
     <button id="btn-received" onclick="confirmReceived()" class="bg-white text-green-700 px-10 py-5 rounded-2xl font-bold text-xl shadow-2xl hover:scale-105 transition">
         <span data-lang="btn_received">✅ Teslim Aldım</span>
     </button>
-    
     <div id="waiting-waiter-msg" class="hidden mt-4 bg-green-800/50 p-4 rounded-xl animate-pulse">
         <span data-lang="wait_waiter">⏳ Garson onayı bekleniyor...</span>
     </div>
   </div>
 
   <script>
-    // --- ÇOKLU DİL SİSTEMİ ---
+    // --- ÇOKLU DİL VE İÇERİK ---
     const translations = {
         tr: {
-            welcome: "Hoşgeldiniz", settings: "Ayarlar", theme: "Tema", color: "Renk", total: "Toplam",
+            welcome: "İnegöl'ün Lezzet Durağı", settings: "Ayarlar", theme: "Tema", color: "Renk", total: "Toplam",
             confirm_cart: "Sepeti Onayla", payment_title: "Ödeme Bilgileri", pay_btn: "Ödeme Yap ve Sipariş Ver",
-            prep_title: "Hazırlanıyor...", prep_desc: "Usta iş başında! Hazır olunca bildirim gelecek.",
-            ready_title: "SİPARİŞ HAZIR!", ready_desc: "Lütfen mutfak bankosundan teslim al.",
+            prep_title: "Hazırlanıyor...", prep_desc: "Siparişiniz hazırlanıyor, lütfen bekleyiniz.",
+            ready_title: "SİPARİŞ HAZIR!", ready_desc: "Lütfen teslim alınız.",
             btn_received: "✅ Teslim Aldım", wait_waiter: "⏳ Garson onayı bekleniyor..."
         },
         en: {
-            welcome: "Welcome", settings: "Settings", theme: "Theme", color: "Color", total: "Total",
+            welcome: "Taste of Inegol", settings: "Settings", theme: "Theme", color: "Color", total: "Total",
             confirm_cart: "Confirm Order", payment_title: "Payment Details", pay_btn: "Pay & Order",
-            prep_title: "Preparing...", prep_desc: "Chef is cooking! We will notify you.",
-            ready_title: "ORDER READY!", ready_desc: "Please pick up from the counter.",
+            prep_title: "Preparing...", prep_desc: "Your order is being prepared.",
+            ready_title: "ORDER READY!", ready_desc: "Please pick up your order.",
             btn_received: "✅ Received", wait_waiter: "⏳ Waiting for Waiter..."
         }
     };
     let currentLang = 'tr';
 
-    function changeLang(lang) {
-        currentLang = lang;
-        document.querySelectorAll('[data-lang]').forEach(el => {
-            const key = el.getAttribute('data-lang');
-            if(translations[lang][key]) el.innerText = translations[lang][key];
-        });
-        // Kategorileri güncelle (Basit çözüm: reload yerine text değişimi)
-        init(); 
-    }
-
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-    function setTheme(mode) { 
-        if(mode==='dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); 
-        localStorage.setItem('theme', mode);
-    }
-    function setColor(color) { 
-        document.documentElement.style.setProperty('--brand-color', color); 
-        localStorage.setItem('brandColor', color);
-    }
-    if(localStorage.getItem('theme')==='dark') setTheme('dark');
-    if(localStorage.getItem('brandColor')) setColor(localStorage.getItem('brandColor'));
-
-    function requestNotificationPermission() { if ("Notification" in window) Notification.requestPermission(); }
-
+    // KATEGORİLER
     const categories = [
-        {id:'sicak', name_tr:'Sıcaklar', name_en:'Hot Drinks'},
-        {id:'soguk', name_tr:'Soğuklar', name_en:'Cold Drinks'},
-        {id:'tatli', name_tr:'Tatlılar', name_en:'Desserts'},
-        {id:'yemek', name_tr:'Yemek', name_en:'Food'}
-    ];
-    const menuItems = [
-        {id:1,cat:'sicak',name:'Çay',price:25,img:'☕'}, {id:2,cat:'sicak',name:'Latte',price:65,img:'🥛'},
-        {id:3,cat:'soguk',name:'Limonata',price:55,img:'🍋'}, {id:4,cat:'tatli',name:'Cheesecake',price:120,img:'🍰'},
-        {id:5,cat:'yemek',name:'Hamburger',price:150,img:'🍔'}, {id:6,cat:'yemek',name:'Tost',price:80,img:'🥪'}
-    ];
-
-    let cart = [];
-    let activeOrderId = null;
-
-    function init() {
-        requestNotificationPermission();
-        const navHtml = categories.map((c,i) => {
-            const name = currentLang === 'tr' ? c.name_tr : c.name_en;
-            return `<button onclick="scrollCat('${c.id}',this)" class="cat-btn ${i===0?'active':''} px-5 py-2 rounded-full border border-gray-300 dark:border-gray-700 font-bold whitespace-nowrap transition text-sm">${name}</button>`
-        }).join('');
-        document.getElementById('category-nav').innerHTML = navHtml;
-
-        const containerHtml = categories.map(cat => {
-            const items = menuItems.filter(i=>i.cat===cat.id);
-            if(!items.length) return '';
-            const catName = currentLang === 'tr' ? cat.name_tr : cat.name_en;
-            return `<div id="${cat.id}" class="mb-8 scroll-mt-24"><h3 class="font-bold text-xl mb-4 text-[var(--brand-color)]">${catName}</h3><div class="grid gap-3">${items.map(i=>`
-                <div class="glass-card p-3 rounded-xl flex justify-between items-center shadow-sm">
-                    <div class="flex items-center gap-3">
-                        <div class="text-3xl bg-gray-100 dark:bg-gray-800 w-12 h-12 flex items-center justify-center rounded-lg">${i.img}</div>
-                        <div><div class="font-bold dark:text-white">${i.name}</div><div class="text-[var(--brand-color)] font-bold">${i.price} ₺</div></div>
-                    </div>
-                    <button onclick="add(${i.id})" class="bg-gray-200 dark:bg-gray-700 w-10 h-10 rounded-full font-bold text-xl text-[var(--brand-color)]">+</button>
-                </div>`).join('')}</div></div>`;
-        }).join('');
-        document.getElementById('menu-container').innerHTML = containerHtml;
-    }
-
-    window.scrollCat=(id,b)=>{document.getElementById(id).scrollIntoView({behavior:'smooth'});document.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};
-    window.add=(id)=>{cart.push(menuItems.find(i=>i.id===id));updateCart()};
-    function updateCart(){
-        const b=document.getElementById('cart-bar');
-        if(cart.length>0){
-            b.classList.remove('translate-y-[150%]');
-            document.getElementById('total-price').innerText=cart.reduce((a,b)=>a+b.price,0)+' ₺';
-            document.getElementById('cart-badge').innerText=cart.length;
-            document.getElementById('cart-badge').classList.remove('hidden');
-        }
-    }
-
-    window.openPaymentModal=()=>document.getElementById('payment-modal').classList.remove('hidden');
-    window.closePaymentModal=()=>document.getElementById('payment-modal').classList.add('hidden');
-
-    window.processOrder = async () => {
-        const name = document.getElementById('customer-name').value;
-        const table = document.getElementById('table-no').value;
-        if(!name) { alert(currentLang==='tr'?"İsim giriniz!":"Enter name!"); return; }
-
-        try {
-            const res = await fetch('/api/orders', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({customer_name: name, table_number: table, items: cart.map(i=>i.name).join(', '), total_price: cart.reduce((a,b)=>a+b.price,0)})
-            });
-            const data = await res.json();
-            if(data.status === 'success') {
-                closePaymentModal();
-                activeOrderId = data.order_id;
-                cart = [];
-                document.getElementById('cart-bar').classList.add('translate-y-[150%]');
-                document.getElementById('preparing-view').classList.remove('hidden');
-                startStatusCheck();
-            }
-        } catch(e) { alert("Error"); }
-    };
-
-    function startStatusCheck() {
-        const check = setInterval(async () => {
-            if(!activeOrderId) { clearInterval(check); return; }
-            try {
-                const res = await fetch(`/api/orders/${activeOrderId}`);
-                const order = await res.json();
-                
-                // Sipariş Tamamen Bitti mi?
-                if(order.status === 'completed') {
-                    document.getElementById('ready-view').classList.add('hidden');
-                    alert(currentLang==='tr' ? "Afiyet olsun! İşlem tamam." : "Enjoy! Order completed.");
-                    location.reload();
-                }
-                // Sipariş Hazır Ama Onay Bekliyor mu?
-                else if(order.status === 'ready') {
-                    document.getElementById('preparing-view').classList.add('hidden');
-                    document.getElementById('ready-view').classList.remove('hidden');
-                    
-                    // Eğer müşteri zaten onayladıysa ama garson onaylamadıysa:
-                    if(order.customer_ok) {
-                        document.getElementById('btn-received').classList.add('hidden');
-                        document.getElementById('waiting-waiter-msg').classList.remove('hidden');
-                    } else {
-                        // Henüz müşteri onaylamadı
-                        if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
-                    }
-                }
-            } catch(e) {}
-        }, 3000);
-    }
-
-    window.confirmReceived = async () => {
-        if(!activeOrderId) return;
-        try {
-            // Müşteri "Aldım" dedi
-            await fetch(`/api/orders/${activeOrderId}/confirm`, {
-                method: 'PUT', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({role: 'customer'})
-            });
-            // Ekranda değişikliği göstermek için status check döngüsünü beklemiyoruz, hemen UI güncelliyoruz
-            document.getElementById('btn-received').classList.add('hidden');
-            document.getElementById('waiting-waiter-msg').classList.remove('hidden');
-        } catch(e) { alert("Error"); }
-    };
-
-    init();
-  </script>
-</body>
-</html>
+        {id:'sicak', name_tr:'Sıcak İçecekler', name_en:'Hot Drinks'},
+        {id:'soguk', name_tr:'Soğuk İçecekler', name_en:'Cold Drinks'},
+        {id:'yemek', name_tr:'Ana Yemekler', name_en:'Main Course'},
+        {id:'atistir', name_tr:'Atıştırmalık', name_en:'Snacks'},
+        {id:'tatli
