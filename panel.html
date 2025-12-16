@@ -2,105 +2,157 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Ömer Faruk Çiftci">
-    <title>Mutfak Paneli</title>
+    <title>Gastro İnegöl - Mutfak Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>body{background-color:#111827; color:white;}</style>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #111827; color: white; font-family: 'Outfit', sans-serif; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        /* Yeni sipariş gelince yanıp sönme efekti */
+        @keyframes flash { 0% { background-color: #111827; } 50% { background-color: #374151; } 100% { background-color: #111827; } }
+        .new-order-anim { animation: flash 1s ease-in-out infinite; }
+    </style>
 </head>
-<body class="p-4 relative">
+<body class="p-4 relative min-h-screen pb-10">
     
     <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
         <div>
-            <h1 class="text-3xl font-bold text-orange-500">🔥 MUTFAK</h1>
-            <div class="text-sm text-gray-400" id="clock">00:00</div>
+            <h1 class="text-3xl font-bold text-orange-500 flex items-center gap-2">
+                <span>🔥</span> GASTRO MUTFAK
+            </h1>
+            <div class="text-sm text-gray-400 font-mono mt-1" id="clock">00:00:00</div>
         </div>
-        <button onclick="toggleHistory()" class="bg-gray-800 p-3 rounded-xl border border-gray-600 hover:bg-gray-700">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+        <button onclick="toggleHistory()" class="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-xl border border-gray-600 transition flex items-center gap-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+            <span class="hidden sm:inline">Geçmiş Siparişler</span>
         </button>
     </div>
 
-    <div id="main-view" class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-12">
-        <div class="bg-gray-800/50 rounded-2xl p-3 border border-yellow-600/30">
-            <h2 class="font-bold text-yellow-400 mb-2 text-center text-lg">👨‍🍳 HAZIRLANIYOR</h2>
-            <div id="col-preparing" class="space-y-2"></div>
+    <div id="main-view" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="bg-gray-800/50 rounded-2xl p-4 border border-yellow-600/30 flex flex-col h-[80vh]">
+            <h2 class="font-bold text-yellow-400 mb-4 text-center text-lg border-b border-yellow-600/30 pb-2 sticky top-0 bg-gray-900/50 backdrop-blur-sm z-10">
+                👨‍🍳 HAZIRLANIYOR <span id="count-prep" class="bg-yellow-600 text-black px-2 rounded-full text-xs ml-2">0</span>
+            </h2>
+            <div id="col-preparing" class="space-y-3 overflow-y-auto hide-scroll flex-1"></div>
         </div>
 
-        <div class="bg-gray-800/50 rounded-2xl p-3 border border-green-600/30">
-            <h2 class="font-bold text-green-400 mb-2 text-center text-lg">🔔 SERVİS / ONAY</h2>
-            <div id="col-ready" class="space-y-2"></div>
+        <div class="bg-gray-800/50 rounded-2xl p-4 border border-green-600/30 flex flex-col h-[80vh]">
+            <h2 class="font-bold text-green-400 mb-4 text-center text-lg border-b border-green-600/30 pb-2 sticky top-0 bg-gray-900/50 backdrop-blur-sm z-10">
+                🔔 SERVİS / ONAY <span id="count-ready" class="bg-green-600 text-black px-2 rounded-full text-xs ml-2">0</span>
+            </h2>
+            <div id="col-ready" class="space-y-3 overflow-y-auto hide-scroll flex-1"></div>
         </div>
 
-        <div class="bg-gray-800/30 rounded-2xl p-3 border border-gray-700">
-            <h2 class="font-bold text-gray-500 mb-2 text-center text-lg">🏁 BİTENLER</h2>
-            <div id="col-completed" class="space-y-2 opacity-60"></div>
+        <div class="bg-gray-800/30 rounded-2xl p-4 border border-gray-700 flex flex-col h-[80vh]">
+            <h2 class="font-bold text-gray-400 mb-4 text-center text-lg border-b border-gray-700 pb-2 sticky top-0 bg-gray-900/50 backdrop-blur-sm z-10">
+                🏁 TAMAMLANAN <span id="count-comp" class="bg-gray-600 text-white px-2 rounded-full text-xs ml-2">0</span>
+            </h2>
+            <div id="col-completed" class="space-y-3 overflow-y-auto hide-scroll flex-1 opacity-60 hover:opacity-100 transition"></div>
         </div>
     </div>
 
-    <div id="history-view" class="fixed inset-0 bg-gray-900 z-50 hidden p-6 overflow-y-auto">
-        <div class="max-w-4xl mx-auto">
+    <div id="history-view" class="fixed inset-0 bg-black/90 z-50 hidden p-6 overflow-y-auto backdrop-blur-md">
+        <div class="max-w-4xl mx-auto bg-gray-900 p-8 rounded-3xl border border-gray-700 shadow-2xl">
             <div class="flex justify-between items-center mb-8">
-                <h2 class="text-3xl font-bold">📅 Geçmiş Arşivi</h2>
-                <button onclick="toggleHistory()" class="text-4xl text-gray-400">&times;</button>
+                <h2 class="text-3xl font-bold text-white">📅 Ciro ve Geçmiş Arşivi</h2>
+                <button onclick="toggleHistory()" class="text-4xl text-gray-400 hover:text-white">&times;</button>
             </div>
-            <div class="flex gap-4 mb-6">
-                <input type="date" id="history-date" class="bg-gray-800 text-white border border-gray-600 rounded-xl px-4 py-3">
-                <button onclick="loadHistory()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold">Sorgula</button>
+            <div class="flex gap-4 mb-6 flex-wrap">
+                <input type="date" id="history-date" class="bg-gray-800 text-white border border-gray-600 rounded-xl px-4 py-3 outline-none focus:border-orange-500">
+                <button onclick="loadHistory()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition">Sorgula 🔍</button>
             </div>
             <div id="history-results" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
     </div>
 
-    <div class="fixed bottom-2 right-4 text-gray-600 text-xs opacity-60 hover:opacity-100 transition cursor-default select-none">
-        ⚡ Dev by <strong class="text-orange-500">Ömer Çiftçi</strong>
+    <div class="fixed bottom-2 right-4 text-gray-600 text-xs opacity-60 hover:opacity-100 transition cursor-default select-none z-50 bg-gray-900/80 px-2 py-1 rounded">
+        ⚡ Dev by <strong class="text-orange-500">Ömer Faruk Çiftci</strong>
     </div>
 
+    <audio id="bell-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
     <script>
-        setInterval(()=>document.getElementById('clock').innerText=new Date().toLocaleTimeString(),1000);
+        // Saat Güncelleme
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('tr-TR');
+        }, 1000);
+
         function toggleHistory(){ document.getElementById('history-view').classList.toggle('hidden'); }
 
+        // Durum Değiştirme (Hazırlanıyor -> Hazır)
         async function setStatus(id, status) {
-            await fetch(`/api/orders/${id}/status`, {
-                method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({status:status})
-            });
-            loadOrders();
+            try {
+                await fetch(`/api/orders/${id}/status`, {
+                    method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({status:status})
+                });
+                loadOrders(); // Listeyi yenile
+            } catch(e) { console.error(e); }
         }
 
+        // Teslim Onayı (Garson Tarafı)
         async function confirmDelivery(id) {
-            await fetch(`/api/orders/${id}/confirm`, {
-                method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({role:'waiter'})
-            });
-            loadOrders();
+            try {
+                await fetch(`/api/orders/${id}/confirm`, {
+                    method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({role:'waiter'})
+                });
+                loadOrders(); // Listeyi yenile
+            } catch(e) { console.error(e); }
         }
+
+        // --- ANA FONKSİYON: Siparişleri Çek ve Dağıt ---
+        let lastOrderCount = 0;
 
         async function loadOrders() {
             try {
                 const res = await fetch('/api/orders');
                 const orders = await res.json();
                 
+                // Yeni sipariş geldiyse ses çal
+                if(orders.length > lastOrderCount) {
+                    const audio = document.getElementById('bell-sound');
+                    audio.play().catch(e=>{});
+                }
+                lastOrderCount = orders.length;
+
                 const prep = [], ready = [], comp = [];
 
                 orders.forEach(o => {
                     let btnHtml = '';
                     
+                    // Buton Mantığı
                     if(o.status === 'preparing') {
-                        btnHtml = `<button onclick="setStatus(${o.id}, 'ready')" class="w-full bg-yellow-600 text-white font-bold py-2 rounded text-sm hover:bg-yellow-500">HAZIRLA 🍳</button>`;
+                        btnHtml = `<button onclick="setStatus(${o.id}, 'ready')" class="w-full bg-yellow-600 text-black font-bold py-3 rounded-xl text-sm hover:bg-yellow-500 transition shadow-lg transform active:scale-95">HAZIRLA 🍳</button>`;
                     }
                     else if(o.status === 'ready') {
-                        if(o.waiter_ok && !o.customer_ok) {
-                            btnHtml = `<div class="bg-orange-900/50 text-orange-200 text-center py-2 rounded text-xs border border-orange-500 animate-pulse">⏳ MÜŞTERİ ONAYI BEKLENİYOR</div>`;
-                        } else if(!o.waiter_ok && o.customer_ok) {
-                            btnHtml = `<button onclick="confirmDelivery(${o.id})" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded text-sm animate-pulse">MÜŞTERİ BEKLİYOR: TESLİM ET ✅</button>`;
-                        } else {
-                            btnHtml = `<button onclick="confirmDelivery(${o.id})" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded text-sm">TESLİM ETTİM (ONAYLA) 📤</button>`;
+                        // Durum 1: Müşteri onayladı, Garson henüz basmadı -> YEŞİL ALARM
+                        if(!o.waiter_ok && o.customer_ok) {
+                            btnHtml = `<button onclick="confirmDelivery(${o.id})" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl text-sm animate-pulse shadow-[0_0_15px_rgba(34,197,94,0.5)] border-2 border-white">✅ MÜŞTERİ BEKLİYOR: TESLİM ET</button>`;
+                        } 
+                        // Durum 2: Garson onayladı, Müşteri henüz basmadı -> TURUNCU BEKLEME
+                        else if(o.waiter_ok && !o.customer_ok) {
+                            btnHtml = `<div class="bg-orange-900/50 text-orange-200 text-center py-3 rounded-xl text-xs border border-orange-500 animate-pulse font-bold">⏳ MÜŞTERİ ONAYI BEKLENİYOR...</div>`;
+                        } 
+                        // Durum 3: Kimse basmadı -> NORMAL MAVİ
+                        else {
+                            btnHtml = `<button onclick="confirmDelivery(${o.id})" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-sm shadow-lg transition transform active:scale-95">TESLİM ETTİM (ONAYLA) 📤</button>`;
                         }
                     }
 
+                    // Kart Tasarımı
                     let card = `
-                        <div class="bg-gray-700 p-3 rounded-lg shadow border-l-4 ${o.status==='preparing'?'border-yellow-500':(o.status==='ready'?'border-green-500':'border-gray-500')}">
-                            <div class="flex justify-between mb-1"><span class="font-bold bg-white text-black px-1 rounded text-sm">${o.table_number}</span><span class="text-xs text-gray-400">#${o.id}</span></div>
-                            <div class="font-bold text-lg">${o.customer_name}</div>
-                            <div class="text-sm text-gray-300 mb-2 truncate">${o.items}</div>
+                        <div class="bg-gray-700 p-4 rounded-xl shadow-md border-l-4 ${o.status==='preparing'?'border-yellow-500':(o.status==='ready'?'border-green-500':'border-gray-500')} hover:bg-gray-650 transition">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-bold bg-white text-black px-2 py-0.5 rounded-md text-sm shadow-sm">${o.table_number}</span>
+                                <span class="text-xs text-gray-400 font-mono">#${o.id} • ${new Date(o.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})}</span>
+                            </div>
+                            <div class="font-bold text-xl text-white mb-1">${o.customer_name}</div>
+                            <div class="text-sm text-gray-300 mb-4 bg-gray-800/50 p-2 rounded-lg border border-gray-600 leading-relaxed">${o.items}</div>
                             ${btnHtml}
+                            <div class="text-right text-[10px] text-gray-500 mt-2 font-mono">Tutar: ${o.total_price} ₺</div>
                         </div>`;
 
                     if(o.status === 'preparing') prep.push(card);
@@ -108,27 +160,59 @@
                     else if(o.status === 'completed') comp.push(card);
                 });
 
+                // HTML'e Basma
                 document.getElementById('col-preparing').innerHTML = prep.join('');
                 document.getElementById('col-ready').innerHTML = ready.join('');
                 document.getElementById('col-completed').innerHTML = comp.join('');
-            } catch(e) {}
+                
+                // Sayıları Güncelle
+                document.getElementById('count-prep').innerText = prep.length;
+                document.getElementById('count-ready').innerText = ready.length;
+                document.getElementById('count-comp').innerText = comp.length;
+
+            } catch(e) { console.error("Veri çekme hatası:", e); }
         }
 
+        // Geçmiş Sorgulama
         async function loadHistory() {
             const d = document.getElementById('history-date').value;
-            if(!d) return alert("Tarih seçin");
-            const res = await fetch(`/api/orders/history?date_str=${d}`);
-            const data = await res.json();
-            const total = data.reduce((a,b)=>a+b.total_price,0);
+            if(!d) return alert("Lütfen tarih seçin!");
             
-            let html = `<div class="col-span-full bg-blue-900 p-4 rounded text-center font-bold text-xl">TOPLAM CİRO: ${total} ₺</div>`;
-            html += data.map(o=>`<div class="bg-gray-800 p-3 rounded border border-gray-600"><div>#${o.id} - ${o.customer_name}</div><div class="text-xs text-gray-400">${o.items}</div><div class="text-right font-bold">${o.total_price} ₺</div></div>`).join('');
-            document.getElementById('history-results').innerHTML = html;
+            try {
+                const res = await fetch(`/api/orders/history?date_str=${d}`);
+                const data = await res.json();
+                
+                if(data.length === 0) {
+                    document.getElementById('history-results').innerHTML = `<div class="col-span-full text-center text-gray-400 py-10">Bu tarihte kayıt bulunamadı.</div>`;
+                    return;
+                }
+
+                const total = data.reduce((a,b)=>a+b.total_price,0);
+                
+                let html = `<div class="col-span-full bg-gradient-to-r from-blue-900 to-blue-800 p-6 rounded-2xl text-center border border-blue-500/30 shadow-lg mb-4">
+                    <div class="text-sm text-blue-200 uppercase tracking-widest">Toplam Günlük Ciro</div>
+                    <div class="text-4xl font-bold text-white mt-1">${total} ₺</div>
+                </div>`;
+                
+                html += data.map(o=>`
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-600 flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-white">#${o.id} - ${o.customer_name}</div>
+                            <div class="text-xs text-gray-400 mt-1">${o.items}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-orange-400">${o.total_price} ₺</div>
+                            <div class="text-[10px] text-gray-500">${o.table_number}</div>
+                        </div>
+                    </div>`).join('');
+                
+                document.getElementById('history-results').innerHTML = html;
+            } catch(e) { alert("Geçmiş yüklenirken hata oluştu."); }
         }
 
+        // Her 2 saniyede bir verileri yenile
         setInterval(loadOrders, 2000);
-        loadOrders();
+        loadOrders(); // İlk açılışta çalıştır
     </script>
 </body>
 </html>
-
