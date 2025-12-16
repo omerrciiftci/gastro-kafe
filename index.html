@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="author" content="Ömer Faruk Çiftci">
-  <meta name="description" content="Gastro İnegöl Dijital Menü - Developed by Ömer Faruk Çiftci">
+  <meta name="description" content="Gastro İnegöl Dijital Menü Sistemi - Developed by Ömer Faruk Çiftci">
   
   <title>Gastro İnegöl</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -35,8 +35,6 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 pb-32 overflow-hidden">
 
-  <audio id="alarm-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
-
   <div id="intro-screen" class="fixed inset-0 z-[999] bg-gray-900 flex flex-col items-center justify-center text-white">
       <div class="relative mb-8">
           <div class="absolute inset-0 bg-orange-500 blur-3xl opacity-20 animate-pulse"></div>
@@ -55,29 +53,25 @@
       </div>
   </div>
 
-  <div class="sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
+  <div class="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
     <div class="p-4 flex justify-between items-center">
         <div>
             <h2 class="font-bold text-xl text-brand">Gastro İnegöl</h2>
-            <div class="flex items-center gap-2 text-xs text-gray-500">
-                <span id="live-time" class="font-mono font-bold">00:00</span>
-                <span id="live-date" class="hidden sm:inline">...</span>
-            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-400" data-lang="welcome">Hoşgeldiniz</div>
         </div>
         
-        <button onclick="toggleSidebar()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-        </button>
-    </div>
+        <div class="flex items-center gap-3">
+            <div class="text-right hidden sm:block">
+                <div id="live-time" class="text-lg font-bold leading-none font-mono">00:00</div>
+                <div id="live-date" class="text-[10px] text-gray-500 uppercase font-bold">...</div>
+            </div>
 
-    <div class="px-4 pb-2">
-        <div class="relative">
-            <input type="text" id="search-box" oninput="searchProduct(this.value)" placeholder="Ürün ara... (örn: Su, Köfte)" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl py-3 pl-10 pr-4 outline-none focus:ring-2 focus:ring-[var(--brand-color)] transition shadow-inner">
-            <span class="absolute left-3 top-3.5 text-gray-400">🔍</span>
+            <button onclick="toggleSidebar()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
         </div>
     </div>
-
-    <div class="flex overflow-x-auto gap-3 p-4 pt-2 hide-scroll" id="category-nav"></div>
+    <div class="flex overflow-x-auto gap-3 p-4 pt-0 hide-scroll" id="category-nav"></div>
   </div>
 
   <div id="sidebar" class="fixed inset-y-0 right-0 w-72 bg-white dark:bg-gray-800 shadow-2xl z-[100] p-6">
@@ -125,27 +119,10 @@
     </div>
   </div>
 
-  <div class="container mx-auto px-4 mt-6 min-h-[60vh]" id="menu-container"></div>
+  <div class="container mx-auto px-4 mt-6" id="menu-container"></div>
 
   <div class="text-center text-xs text-gray-400 dark:text-gray-600 py-8 mb-24 font-semibold tracking-wider uppercase select-none">
       Designed & Developed by <span class="text-[var(--brand-color)]">Ömer Faruk Çiftci</span>
-  </div>
-
-  <div id="product-modal" class="fixed inset-0 bg-black/90 z-[150] hidden flex items-center justify-center p-4 backdrop-blur-md" onclick="closeProductModal()">
-      <div class="bg-gray-900 w-full max-w-sm rounded-3xl p-6 relative border border-gray-700 shadow-2xl animate-[slideUp_0.3s]" onclick="event.stopPropagation()">
-          <button onclick="closeProductModal()" class="absolute top-4 right-4 text-white text-2xl z-10 bg-black/50 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-600 transition">&times;</button>
-          
-          <div class="text-8xl text-center mb-6 animate-bounce mt-4 drop-shadow-2xl" id="modal-img">🍔</div>
-          
-          <h2 class="text-3xl font-bold text-white mb-2 text-center" id="modal-title">Ürün Adı</h2>
-          <p class="text-gray-400 text-center mb-6 px-4 leading-relaxed" id="modal-desc">Ürün açıklaması burada yer alacak.</p>
-          
-          <div class="text-5xl font-bold text-[var(--brand-color)] text-center mb-8 drop-shadow-lg" id="modal-price">0 ₺</div>
-          
-          <button id="modal-add-btn" class="w-full bg-[var(--brand-color)] text-white py-4 rounded-2xl font-bold text-xl shadow-lg active:scale-95 transition flex justify-center items-center gap-2">
-              <span>Sepete Ekle</span> 🛒
-          </button>
-      </div>
   </div>
 
   <div id="music-modal" class="fixed inset-0 bg-black/80 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-md">
@@ -164,6 +141,10 @@
         <div class="space-y-4">
             <div class="text-sm text-gray-500 font-bold mb-2 uppercase">Sıradaki Şarkıyı Seç (% Oy)</div>
             <div id="music-list" class="space-y-3 max-h-60 overflow-y-auto hide-scroll"></div>
+        </div>
+        
+        <div class="mt-6 text-center text-xs text-gray-500 border-t border-gray-800 pt-4">
+            * En çok oy alan şarkı bir sonraki turda çalar.
         </div>
     </div>
   </div>
@@ -208,11 +189,11 @@
         <div class="space-y-4">
             <input type="text" id="customer-name" class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl p-4 outline-none border-2 border-transparent focus:border-[var(--brand-color)]" placeholder="Adınız Soyadınız / Name">
             <select id="table-no" class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl p-4 outline-none">
-                <option value="Masa 1">Masa / Table 1</option>
-                <option value="Masa 2">Masa / Table 2</option>
-                <option value="Masa 3">Masa / Table 3</option>
-                <option value="Bahçe 1">Bahçe / Garden 1</option>
-                <option value="Bahçe 2">Bahçe / Garden 2</option>
+                <option value="Masa 1">Masa 1</option>
+                <option value="Masa 2">Masa 2</option>
+                <option value="Masa 3">Masa 3</option>
+                <option value="Bahçe 1">Bahçe 1</option>
+                <option value="Bahçe 2">Bahçe 2</option>
             </select>
             <button onclick="processOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg flex justify-center items-center gap-2 hover:bg-green-500 transition">
                 <span data-lang="pay_btn">Ödeme Yap ve Sipariş Ver</span> 🔒
@@ -240,11 +221,11 @@
   </div>
 
   <script>
-    // --- GİRİŞ ANİMASYONU ---
+    // --- INTRO / GİRİŞ FONKSİYONU ---
     function enterSite() {
         document.getElementById('intro-screen').classList.add('slide-up');
+        // Kaydırmayı tekrar aktif et
         document.body.classList.remove('overflow-hidden');
-        requestNotificationPermission();
     }
 
     // --- SAAT FONKSİYONU ---
@@ -259,18 +240,10 @@
         if(timeEl) timeEl.innerText = timeStr;
         if(dateEl) dateEl.innerText = dateStr;
     }
+    // Saati her saniye güncelle
     setInterval(updateClock, 1000);
+    // Sayfa açılır açılmaz bir kere çalıştır
     updateClock();
-
-    // --- ALARM SİSTEMİ ---
-    function playAlarm() {
-        const audio = document.getElementById('alarm-sound');
-        if(audio) {
-            audio.currentTime = 0;
-            audio.play().catch(e => console.log("Otomatik oynatma kısıtlaması olabilir."));
-        }
-        if(navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000]); // Güçlü titreşim
-    }
 
     // --- BİLDİRİM İZNİ ---
     function requestNotificationPermission() {
@@ -279,58 +252,11 @@
         }
     }
 
-    // --- ARAMA SİSTEMİ (SU YAZINCA DİREKT GELMESİ) ---
-    function searchProduct(query) {
-        query = query.toLowerCase();
-        
-        categories.forEach(cat => {
-            const catDiv = document.getElementById(cat.id);
-            const itemsInCat = menuItems.filter(i => i.cat === cat.id);
-            let hasMatch = false;
-
-            // Kategori içindeki ürünleri bul
-            const itemDivs = catDiv.querySelectorAll('.glass-card');
-            
-            itemsInCat.forEach((item, index) => {
-                // Sadece element varsa işlem yap (Hata önleyici)
-                if(itemDivs[index]) {
-                    const iName = (currentLang==='tr'?item.name_tr:item.name_en).toLowerCase();
-                    if (iName.includes(query)) {
-                        itemDivs[index].style.display = "flex"; // Göster
-                        hasMatch = true;
-                    } else {
-                        itemDivs[index].style.display = "none"; // Gizle
-                    }
-                }
-            });
-
-            // Eğer kategoride hiç eşleşme yoksa başlığı da gizle
-            catDiv.style.display = hasMatch ? "block" : "none";
-        });
+    // --- MÜZİK (DJ) SİSTEMİ ---
+    window.openMusicModal = () => {
+        document.getElementById('music-modal').classList.remove('hidden');
+        loadMusicData();
     }
-
-    // --- ÜRÜN DETAY MODALI ---
-    function openProductDetail(id) {
-        const item = menuItems.find(i => i.id === id);
-        if(!item) return;
-
-        const name = currentLang === 'tr' ? item.name_tr : item.name_en;
-        const desc = currentLang === 'tr' ? item.desc_tr : item.desc_en;
-
-        document.getElementById('modal-img').innerText = item.img;
-        document.getElementById('modal-title').innerText = name;
-        document.getElementById('modal-desc').innerText = desc;
-        document.getElementById('modal-price').innerText = item.price + " ₺";
-        
-        const btn = document.getElementById('modal-add-btn');
-        btn.onclick = function() { add(id); closeProductModal(); };
-
-        document.getElementById('product-modal').classList.remove('hidden');
-    }
-    function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
-
-    // --- MÜZİK SİSTEMİ ---
-    window.openMusicModal = () => { document.getElementById('music-modal').classList.remove('hidden'); loadMusicData(); }
     window.closeMusicModal = () => document.getElementById('music-modal').classList.add('hidden');
 
     async function loadMusicData() {
@@ -338,9 +264,11 @@
             const res = await fetch('/api/music');
             const data = await res.json();
             
+            // Çalan Şarkı Bilgisi
             document.getElementById('current-song-title').innerText = data.now_playing.title;
             document.getElementById('current-song-artist').innerText = data.now_playing.artist;
 
+            // Oylama Listesi
             const listHtml = data.candidates.map(song => `
                 <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 cursor-pointer hover:border-[var(--brand-color)] transition group" onclick="voteSong(${song.id})">
                     <div class="flex justify-between text-white text-sm font-bold mb-2">
@@ -364,8 +292,11 @@
         } catch(e) {}
     }
 
+    // Müzik modalı açıksa verileri yenile
     setInterval(() => {
-        if(!document.getElementById('music-modal').classList.contains('hidden')) { loadMusicData(); }
+        if(!document.getElementById('music-modal').classList.contains('hidden')) {
+            loadMusicData();
+        }
     }, 3000);
 
     // --- ÇOKLU DİL SİSTEMİ ---
@@ -395,7 +326,7 @@
         {id:'tatli', name_tr:'Tatlılar', name_en:'Desserts'}
     ];
 
-    // --- TAM 32 ÇEŞİT ÜRÜN LİSTESİ (EKSİKSİZ) ---
+    // --- TAM 32 ÇEŞİT ÜRÜN LİSTESİ ---
     const menuItems = [
         {id:1, cat:'sicak', name_tr:'Çay', name_en:'Tea', price:15, img:'☕', desc_tr:'Taze demlenmiş Rize çayı', desc_en:'Fresh brewed black tea'},
         {id:2, cat:'sicak', name_tr:'Fincan Çay', name_en:'Cup of Tea', price:25, img:'🍵', desc_tr:'Büyük fincanda', desc_en:'Large cup'},
@@ -457,7 +388,8 @@
                         const iName = currentLang === 'tr' ? i.name_tr : i.name_en;
                         const iDesc = currentLang === 'tr' ? i.desc_tr : i.desc_en;
                         return `
-                        <div class="glass-card p-3 rounded-xl flex justify-between items-center shadow-sm relative overflow-hidden group cursor-pointer hover:bg-white/5 transition" onclick="openProductDetail(${i.id})">
+                        <div class="glass-card p-3 rounded-xl flex justify-between items-center shadow-sm relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition pointer-events-none"></div>
                             <div class="flex items-center gap-3 relative z-10 pointer-events-none w-full">
                                 <div class="text-3xl bg-gray-100 dark:bg-gray-800 w-14 h-14 flex items-center justify-center rounded-lg shadow-inner">${i.img}</div>
                                 <div class="flex-1 min-w-0">
@@ -466,7 +398,7 @@
                                     <div class="text-[var(--brand-color)] font-bold mt-1">${i.price} ₺</div>
                                 </div>
                             </div>
-                            <button onclick="event.stopPropagation(); add(${i.id})" class="relative z-20 bg-gray-200 dark:bg-gray-700 w-10 h-10 rounded-full font-bold text-xl text-[var(--brand-color)] hover:bg-[var(--brand-color)] hover:text-white transition shadow-md flex-shrink-0">+</button>
+                            <button onclick="add(${i.id})" class="relative z-20 bg-gray-200 dark:bg-gray-700 w-10 h-10 rounded-full font-bold text-xl text-[var(--brand-color)] hover:bg-[var(--brand-color)] hover:text-white transition shadow-md flex-shrink-0">+</button>
                         </div>`;
                     }).join('')}
                 </div>
@@ -539,6 +471,7 @@
             const data = await res.json();
             if(data.status === 'success') {
                 closePaymentModal();
+                keepScreenOn();
                 activeOrderId = data.order_id;
                 cart = [];
                 document.getElementById('cart-bar').classList.add('translate-y-[150%]');
@@ -563,13 +496,11 @@
                 else if(order.status === 'ready') {
                     document.getElementById('preparing-view').classList.add('hidden');
                     document.getElementById('ready-view').classList.remove('hidden');
-                    
-                    // ALARM BURADA ÇALIYOR!
-                    playAlarm();
-
                     if(order.customer_ok) {
                         document.getElementById('btn-received').classList.add('hidden');
                         document.getElementById('waiting-waiter-msg').classList.remove('hidden');
+                    } else {
+                        if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
                     }
                 }
             } catch(e) {}
@@ -589,6 +520,22 @@
     };
 
     init();
+    // --- EKRANIN KAPANMASINI ENGELLEME (Wake Lock) ---
+let wakeLock = null;
+
+async function keepScreenOn() {
+    if ('wakeLock' in navigator) {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log("Ekran kilitlenmesi engellendi! (Wake Lock Aktif)");
+        } catch (err) {
+            console.log("Ekran açık tutulamadı:", err);
+        }
+    }
+}
+
+// Sipariş verildiği an bu modu açıyoruz
+// (Bunu processOrder fonksiyonunun içine, 'closePaymentModal()' satırının altına ekledim varsay)
   </script>
 </body>
 </html>
