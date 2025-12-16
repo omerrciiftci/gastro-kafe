@@ -13,6 +13,11 @@
   <style>
     :root { --brand-color: #ea580c; }
     body { font-family: 'Outfit', sans-serif; transition: background-color 0.3s, color 0.3s; }
+    
+    /* Intro Animasyonları */
+    #intro-screen { transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1); }
+    .slide-up { transform: translateY(-100%); }
+    
     .glass-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
     .dark .glass-card { background: rgba(30,41,59,0.7); border: 1px solid rgba(255,255,255,0.05); }
     .hide-scroll::-webkit-scrollbar { display: none; }
@@ -21,14 +26,32 @@
     #sidebar.open { transform: translateX(0); }
     .credit-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
     
-    /* MÜZİK ANİMASYONU */
+    /* Müzik Ekolayzer */
     .music-bar { width: 4px; background: #22c55e; animation: equalizer 1s infinite ease-in-out; }
     .music-bar:nth-child(2) { animation-delay: 0.2s; height: 60%; }
     .music-bar:nth-child(3) { animation-delay: 0.4s; height: 80%; }
     @keyframes equalizer { 0%, 100% { height: 20%; } 50% { height: 100%; } }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 pb-32">
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 pb-32 overflow-hidden">
+
+  <div id="intro-screen" class="fixed inset-0 z-[999] bg-gray-900 flex flex-col items-center justify-center text-white">
+      <div class="relative mb-8">
+          <div class="absolute inset-0 bg-orange-500 blur-3xl opacity-20 animate-pulse"></div>
+          <div class="text-6xl mb-4 relative z-10 animate-bounce">🍲</div>
+      </div>
+      <h1 class="text-4xl font-bold mb-2 tracking-tight">Gastro <span class="text-orange-500">İnegöl</span></h1>
+      <p class="text-gray-400 mb-10 text-sm tracking-widest uppercase">Yeni Nesil Lezzet Deneyimi</p>
+      
+      <button onclick="enterSite()" class="group relative px-8 py-4 bg-orange-600 rounded-full font-bold text-lg overflow-hidden shadow-2xl hover:scale-105 transition duration-300">
+          <span class="relative z-10">MENÜYE BAŞLA 🚀</span>
+          <div class="absolute inset-0 h-full w-full scale-0 rounded-full transition-all duration-300 group-hover:scale-150 group-hover:bg-orange-500/50"></div>
+      </button>
+      
+      <div class="absolute bottom-8 text-xs text-gray-600 uppercase tracking-wider">
+          Dev by Ömer Faruk Çiftci
+      </div>
+  </div>
 
   <div class="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
     <div class="p-4 flex justify-between items-center">
@@ -36,9 +59,17 @@
             <h2 class="font-bold text-xl text-brand">Gastro İnegöl</h2>
             <div class="text-xs text-gray-500 dark:text-gray-400" data-lang="welcome">Hoşgeldiniz</div>
         </div>
-        <button onclick="toggleSidebar()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-        </button>
+        
+        <div class="flex items-center gap-3">
+            <div class="text-right hidden sm:block">
+                <div id="live-time" class="text-lg font-bold leading-none font-mono">00:00</div>
+                <div id="live-date" class="text-[10px] text-gray-500 uppercase font-bold">...</div>
+            </div>
+
+            <button onclick="toggleSidebar()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
     </div>
     <div class="flex overflow-x-auto gap-3 p-4 pt-0 hide-scroll" id="category-nav"></div>
   </div>
@@ -158,11 +189,11 @@
         <div class="space-y-4">
             <input type="text" id="customer-name" class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl p-4 outline-none border-2 border-transparent focus:border-[var(--brand-color)]" placeholder="Adınız Soyadınız / Name">
             <select id="table-no" class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl p-4 outline-none">
-                <option value="Masa 1">Masa / Table 1</option>
-                <option value="Masa 2">Masa / Table 2</option>
-                <option value="Masa 3">Masa / Table 3</option>
-                <option value="Bahçe 1">Bahçe / Garden 1</option>
-                <option value="Bahçe 2">Bahçe / Garden 2</option>
+                <option value="Masa 1">Masa 1</option>
+                <option value="Masa 2">Masa 2</option>
+                <option value="Masa 3">Masa 3</option>
+                <option value="Bahçe 1">Bahçe 1</option>
+                <option value="Bahçe 2">Bahçe 2</option>
             </select>
             <button onclick="processOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg flex justify-center items-center gap-2 hover:bg-green-500 transition">
                 <span data-lang="pay_btn">Ödeme Yap ve Sipariş Ver</span> 🔒
@@ -190,12 +221,38 @@
   </div>
 
   <script>
-    // BİLDİRİM İZNİ
-    function requestNotificationPermission() {
-        if ("Notification" in window) { Notification.requestPermission(); }
+    // --- INTRO / GİRİŞ FONKSİYONU ---
+    function enterSite() {
+        document.getElementById('intro-screen').classList.add('slide-up');
+        // Kaydırmayı tekrar aktif et
+        document.body.classList.remove('overflow-hidden');
     }
 
-    // --- MÜZİK SİSTEMİ (JS) ---
+    // --- SAAT FONKSİYONU ---
+    function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        const dateStr = now.toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long'});
+        
+        const timeEl = document.getElementById('live-time');
+        const dateEl = document.getElementById('live-date');
+        
+        if(timeEl) timeEl.innerText = timeStr;
+        if(dateEl) dateEl.innerText = dateStr;
+    }
+    // Saati her saniye güncelle
+    setInterval(updateClock, 1000);
+    // Sayfa açılır açılmaz bir kere çalıştır
+    updateClock();
+
+    // --- BİLDİRİM İZNİ ---
+    function requestNotificationPermission() {
+        if ("Notification" in window) {
+            Notification.requestPermission();
+        }
+    }
+
+    // --- MÜZİK (DJ) SİSTEMİ ---
     window.openMusicModal = () => {
         document.getElementById('music-modal').classList.remove('hidden');
         loadMusicData();
@@ -207,11 +264,11 @@
             const res = await fetch('/api/music');
             const data = await res.json();
             
-            // Çalan Şarkı
+            // Çalan Şarkı Bilgisi
             document.getElementById('current-song-title').innerText = data.now_playing.title;
             document.getElementById('current-song-artist').innerText = data.now_playing.artist;
 
-            // Aday Listesi
+            // Oylama Listesi
             const listHtml = data.candidates.map(song => `
                 <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 cursor-pointer hover:border-[var(--brand-color)] transition group" onclick="voteSong(${song.id})">
                     <div class="flex justify-between text-white text-sm font-bold mb-2">
@@ -235,13 +292,14 @@
         } catch(e) {}
     }
 
-    // Modal açıksa 3sn'de bir yenile
+    // Müzik modalı açıksa verileri yenile
     setInterval(() => {
-        if(!document.getElementById('music-modal').classList.contains('hidden')) { loadMusicData(); }
+        if(!document.getElementById('music-modal').classList.contains('hidden')) {
+            loadMusicData();
+        }
     }, 3000);
 
-
-    // --- DİL VE İÇERİK ---
+    // --- ÇOKLU DİL SİSTEMİ ---
     const translations = {
         tr: {
             welcome: "İnegöl'ün Lezzet Durağı", settings: "Ayarlar", theme: "Tema", color: "Renk", total: "Toplam",
@@ -268,7 +326,7 @@
         {id:'tatli', name_tr:'Tatlılar', name_en:'Desserts'}
     ];
 
-    // --- TAM 32 ÜRÜN ---
+    // --- TAM 32 ÇEŞİT ÜRÜN LİSTESİ ---
     const menuItems = [
         {id:1, cat:'sicak', name_tr:'Çay', name_en:'Tea', price:15, img:'☕', desc_tr:'Taze demlenmiş Rize çayı', desc_en:'Fresh brewed black tea'},
         {id:2, cat:'sicak', name_tr:'Fincan Çay', name_en:'Cup of Tea', price:25, img:'🍵', desc_tr:'Büyük fincanda', desc_en:'Large cup'},
@@ -310,12 +368,14 @@
     function init() {
         requestNotificationPermission();
         
+        // Kategorileri Oluştur
         const navHtml = categories.map((c,i) => {
             const name = currentLang === 'tr' ? c.name_tr : c.name_en;
             return `<button onclick="scrollCat('${c.id}',this)" class="cat-btn ${i===0?'active':''} px-5 py-2 rounded-full border border-gray-300 dark:border-gray-700 font-bold whitespace-nowrap transition text-sm">${name}</button>`
         }).join('');
         document.getElementById('category-nav').innerHTML = navHtml;
 
+        // Ürünleri Listele
         const containerHtml = categories.map(cat => {
             const items = menuItems.filter(i=>i.cat===cat.id);
             if(!items.length) return '';
