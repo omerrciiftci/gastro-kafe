@@ -236,17 +236,19 @@
   </div>
 
   <script>
-    // --- GİRİŞ ANİMASYONU VE SES İZNİ KİLİDİ KIRMA ---
+    // --- GİRİŞ ANİMASYONU VE SESSİZ KİLİT KIRMA ---
     function enterSite() {
         document.getElementById('intro-screen').classList.add('slide-up');
         document.body.classList.remove('overflow-hidden');
         
-        // SES KİLİDİNİ KIRMA (Kullanıcı tıkladığı an boş ses oynatıp durdur)
+        // SES KİLİDİNİ SESSİZCE KIRMA (Önce mute, sonra play, sonra unmute)
         const audio = document.getElementById('alarm-sound');
+        audio.muted = true; // Sesi kapat
         audio.play().then(() => {
             audio.pause();
             audio.currentTime = 0;
-            console.log("Ses motoru aktif edildi! 🔊");
+            audio.muted = false; // Sesi geri aç (alarm çalacağı zaman duyulsun)
+            console.log("Ses motoru (sessizce) aktif edildi! 🔊");
         }).catch(err => console.log("Ses izni alınamadı:", err));
 
         requestNotificationPermission();
@@ -351,6 +353,8 @@
     };
     let currentLang = 'tr';
     const categories = [{id:'sicak', name_tr:'Sıcak İçecekler', name_en:'Hot Drinks'},{id:'soguk', name_tr:'Soğuk İçecekler', name_en:'Cold Drinks'},{id:'yemek', name_tr:'Ana Yemekler', name_en:'Main Course'},{id:'atistir', name_tr:'Atıştırmalık', name_en:'Snacks'},{id:'tatli', name_tr:'Tatlılar', name_en:'Desserts'}];
+    
+    // TAM 32 ÜRÜN LİSTESİ
     const menuItems = [
         {id:1, cat:'sicak', name_tr:'Çay', name_en:'Tea', price:15, img:'☕', desc_tr:'Taze demlenmiş Rize çayı', desc_en:'Fresh brewed black tea'},
         {id:2, cat:'sicak', name_tr:'Fincan Çay', name_en:'Cup of Tea', price:25, img:'🍵', desc_tr:'Büyük fincanda', desc_en:'Large cup'},
