@@ -1,5 +1,10 @@
 fastapi
 uvicorn
 sqlalchemy
-qrcode[pil]
-pydantic
+python-jose
+cryptography
+passlib[bcrypt]
+python-multipart
+slowapi
+python-dotenv
+websockets
