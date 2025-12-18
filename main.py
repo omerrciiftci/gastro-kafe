@@ -48,7 +48,8 @@ limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="Gastro İnegöl API", description="Pro Sürüm - Developed by Ömer Faruk Çiftci", version="4.0.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
+# Bu satırı bul ve şununla değiştir:
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__handle_max_72_decode_error=True)
 # Şifreleme
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -63,7 +64,7 @@ app.add_middleware(
 )
 
 # --- VERİTABANI AYARLARI (SQLite) ---
-SQLALCHEMY_DATABASE_URL = "sqlite:///./kafe_sistemi.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./gastro_v2.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
