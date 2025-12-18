@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,15 +9,39 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #111827; color: white; font-family: 'Outfit', sans-serif; }
-        .hide-scroll::-webkit-scrollbar { display: none; }
+        body {
+            background-color: #111827;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
         /* Yeni sipariş gelince yanıp sönme efekti */
-        @keyframes flash { 0% { background-color: #111827; } 50% { background-color: #374151; } 100% { background-color: #111827; } }
-        .new-order-anim { animation: flash 1s ease-in-out infinite; }
+        @keyframes flash {
+            0% {
+                background-color: #111827;
+            }
+
+            50% {
+                background-color: #374151;
+            }
+
+            100% {
+                background-color: #111827;
+            }
+        }
+
+        .new-order-anim {
+            animation: flash 1s ease-in-out infinite;
+        }
     </style>
 </head>
+
 <body class="p-4 relative min-h-screen pb-10">
-    
+
     <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
         <div>
             <h1 class="text-3xl font-bold text-orange-500 flex items-center gap-2">
@@ -24,33 +49,45 @@
             </h1>
             <div class="text-sm text-gray-400 font-mono mt-1" id="clock">00:00:00</div>
         </div>
-        <button onclick="toggleHistory()" class="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-xl border border-gray-600 transition flex items-center gap-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+        <button onclick="toggleHistory()"
+            class="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-xl border border-gray-600 transition flex items-center gap-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                </path>
+            </svg>
             <span class="hidden sm:inline">Geçmiş Siparişler</span>
         </button>
     </div>
 
     <div id="main-view" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         <div class="bg-gray-800/50 rounded-2xl p-4 border border-yellow-600/30 flex flex-col h-[80vh]">
-            <h2 class="font-bold text-yellow-400 mb-4 text-center text-lg border-b border-yellow-600/30 pb-2 sticky top-0 bg-gray-900/50 backdrop-blur-sm z-10">
-                👨‍🍳 HAZIRLANIYOR <span id="count-prep" class="bg-yellow-600 text-black px-2 rounded-full text-xs ml-2">0</span>
+            <h2
+                class="font-bold text-yellow-400 mb-4 text-center text-lg border-b border-yellow-600/30 pb-2 sticky top-0 bg-gray-900/50 backdrop-blur-sm z-10">
+                👨‍🍳 HAZIRLANIYOR <span id="count-prep"
+                    class="bg-yellow-600 text-black px-2 rounded-full text-xs ml-2">0</span>
             </h2>
             <div id="col-preparing" class="space-y-3 overflow-y-auto hide-scroll flex-1"></div>
         </div>
 
         <div class="bg-gray-800/50 rounded-2xl p-4 border border-green-600/30 flex flex-col h-[80vh]">
-            <h2 class="font-bold text-green-400 mb-4 text-center text-lg border-b border-green-600/30 pb-2 sticky top-0 bg-gray-900/50 backdrop-blur-sm z-10">
-                🔔 SERVİS / ONAY <span id="count-ready" class="bg-green-600 text-black px-2 rounded-full text-xs ml-2">0</span>
+            <h2
+                class="font-bold text-green-400 mb-4 text-center text-lg border-b border-green-600/30 pb-2 sticky top-0 bg-gray-900/50 backdrop-blur-sm z-10">
+                🔔 SERVİS / ONAY <span id="count-ready"
+                    class="bg-green-600 text-black px-2 rounded-full text-xs ml-2">0</span>
             </h2>
             <div id="col-ready" class="space-y-3 overflow-y-auto hide-scroll flex-1"></div>
         </div>
 
         <div class="bg-gray-800/30 rounded-2xl p-4 border border-gray-700 flex flex-col h-[80vh]">
-            <h2 class="font-bold text-gray-400 mb-4 text-center text-lg border-b border-gray-700 pb-2 sticky top-0 bg-gray-900/50 backdrop-blur-sm z-10">
-                🏁 TAMAMLANAN <span id="count-comp" class="bg-gray-600 text-white px-2 rounded-full text-xs ml-2">0</span>
+            <h2
+                class="font-bold text-gray-400 mb-4 text-center text-lg border-b border-gray-700 pb-2 sticky top-0 bg-gray-900/50 backdrop-blur-sm z-10">
+                🏁 TAMAMLANAN <span id="count-comp"
+                    class="bg-gray-600 text-white px-2 rounded-full text-xs ml-2">0</span>
             </h2>
-            <div id="col-completed" class="space-y-3 overflow-y-auto hide-scroll flex-1 opacity-60 hover:opacity-100 transition"></div>
+            <div id="col-completed"
+                class="space-y-3 overflow-y-auto hide-scroll flex-1 opacity-60 hover:opacity-100 transition"></div>
         </div>
     </div>
 
@@ -61,18 +98,41 @@
                 <button onclick="toggleHistory()" class="text-4xl text-gray-400 hover:text-white">&times;</button>
             </div>
             <div class="flex gap-4 mb-6 flex-wrap">
-                <input type="date" id="history-date" class="bg-gray-800 text-white border border-gray-600 rounded-xl px-4 py-3 outline-none focus:border-orange-500">
-                <button onclick="loadHistory()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition">Sorgula 🔍</button>
+                <input type="date" id="history-date"
+                    class="bg-gray-800 text-white border border-gray-600 rounded-xl px-4 py-3 outline-none focus:border-orange-500">
+                <button onclick="loadHistory()"
+                    class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition">Sorgula
+                    🔍</button>
             </div>
             <div id="history-results" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
     </div>
 
-    <div class="fixed bottom-2 right-4 text-gray-600 text-xs opacity-60 hover:opacity-100 transition cursor-default select-none z-50 bg-gray-900/80 px-2 py-1 rounded">
+    <div
+        class="fixed bottom-2 right-4 text-gray-600 text-xs opacity-60 hover:opacity-100 transition cursor-default select-none z-50 bg-gray-900/80 px-2 py-1 rounded">
         ⚡ Dev by <strong class="text-orange-500">Ömer Faruk Çiftci</strong>
     </div>
 
-    <audio id="bell-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+    <audio id="bell-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+        preload="auto"></audio>
+
+    <!-- LOGIN MODAL -->
+    <div id="login-modal" class="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-4">
+        <div class="bg-gray-900 p-8 rounded-3xl border border-gray-700 w-full max-w-sm text-center shadow-2xl">
+            <div class="text-6xl mb-6">🔒</div>
+            <h2 class="text-2xl font-bold mb-6 text-white">Personel Girişi</h2>
+            <form onsubmit="event.preventDefault(); login();" class="space-y-4">
+                <input type="text" id="username" placeholder="Kullanıcı Adı"
+                    class="w-full bg-gray-800 text-white p-4 rounded-xl border border-gray-600 outline-none focus:border-orange-500">
+                <input type="password" id="password" placeholder="Şifre"
+                    class="w-full bg-gray-800 text-white p-4 rounded-xl border border-gray-600 outline-none focus:border-orange-500">
+                <button type="submit"
+                    class="w-full bg-orange-600 text-white py-4 rounded-xl font-bold hover:bg-orange-500 transition shadow-lg">GİRİŞ
+                    YAP</button>
+            </form>
+            <div id="login-error" class="text-red-500 mt-4 text-sm hidden">Hatalı giriş!</div>
+        </div>
+    </div>
 
     <script>
         // Saat Güncelleme
@@ -81,61 +141,107 @@
             document.getElementById('clock').innerText = now.toLocaleTimeString('tr-TR');
         }, 1000);
 
-        function toggleHistory(){ document.getElementById('history-view').classList.toggle('hidden'); }
+        function toggleHistory() { document.getElementById('history-view').classList.toggle('hidden'); }
+
+        // --- AUTH SISTEMI ---
+        let token = localStorage.getItem('access_token');
+        if (token) document.getElementById('login-modal').classList.add('hidden');
+
+        async function login() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+
+            const formData = new FormData();
+            formData.append('username', u);
+            formData.append('password', p);
+
+            try {
+                const res = await fetch('/token', { method: 'POST', body: formData });
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                token = data.access_token;
+                localStorage.setItem('access_token', token);
+                document.getElementById('login-modal').classList.add('hidden');
+                loadOrders();
+                connectWebSocket();
+            } catch (e) {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        // --- WEBSOCKET ---
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const ws = new WebSocket(`${protocol}//${window.location.host}/ws/orders`);
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'new_order' || data.type === 'update') {
+                    loadOrders(); // Veri değişti, listeyi yenile
+                    const audio = document.getElementById('bell-sound');
+                    if (data.type === 'new_order' && audio) audio.play().catch(e => { });
+                }
+            };
+
+            ws.onclose = () => {
+                console.log("WS Bağlantısı koptu. Yeniden bağlanılıyor...");
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
 
         // Durum Değiştirme (Hazırlanıyor -> Hazır)
         async function setStatus(id, status) {
             try {
-                await fetch(`/api/orders/${id}/status`, {
-                    method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({status:status})
+                const res = await fetch(`/api/orders/${id}/status`, {
+                    method: 'PUT', headers: getHeaders(), body: JSON.stringify({ status: status })
                 });
-                loadOrders(); // Listeyi yenile
-            } catch(e) { console.error(e); }
+                if (res.status === 401) location.reload();
+            } catch (e) { console.error(e); }
         }
 
         // Teslim Onayı (Garson Tarafı)
         async function confirmDelivery(id) {
             try {
                 await fetch(`/api/orders/${id}/confirm`, {
-                    method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({role:'waiter'})
+                    method: 'PUT', headers: getHeaders(), body: JSON.stringify({ role: 'waiter' })
                 });
-                loadOrders(); // Listeyi yenile
-            } catch(e) { console.error(e); }
+                // WS güncelleyecek zaten
+            } catch (e) { console.error(e); }
         }
 
         // --- ANA FONKSİYON: Siparişleri Çek ve Dağıt ---
-        let lastOrderCount = 0;
-
         async function loadOrders() {
+            if (!token) return;
             try {
-                const res = await fetch('/api/orders');
+                const res = await fetch('/api/orders', { headers: getHeaders() });
+                if (res.status === 401) { logout(); return; }
                 const orders = await res.json();
-                
-                // Yeni sipariş geldiyse ses çal
-                if(orders.length > lastOrderCount) {
-                    const audio = document.getElementById('bell-sound');
-                    audio.play().catch(e=>{});
-                }
-                lastOrderCount = orders.length;
 
                 const prep = [], ready = [], comp = [];
 
                 orders.forEach(o => {
                     let btnHtml = '';
-                    
+
                     // Buton Mantığı
-                    if(o.status === 'preparing') {
+                    if (o.status === 'preparing') {
                         btnHtml = `<button onclick="setStatus(${o.id}, 'ready')" class="w-full bg-yellow-600 text-black font-bold py-3 rounded-xl text-sm hover:bg-yellow-500 transition shadow-lg transform active:scale-95">HAZIRLA 🍳</button>`;
                     }
-                    else if(o.status === 'ready') {
+                    else if (o.status === 'ready') {
                         // Durum 1: Müşteri onayladı, Garson henüz basmadı -> YEŞİL ALARM
-                        if(!o.waiter_ok && o.customer_ok) {
+                        if (!o.waiter_ok && o.customer_ok) {
                             btnHtml = `<button onclick="confirmDelivery(${o.id})" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl text-sm animate-pulse shadow-[0_0_15px_rgba(34,197,94,0.5)] border-2 border-white">✅ MÜŞTERİ BEKLİYOR: TESLİM ET</button>`;
-                        } 
+                        }
                         // Durum 2: Garson onayladı, Müşteri henüz basmadı -> TURUNCU BEKLEME
-                        else if(o.waiter_ok && !o.customer_ok) {
+                        else if (o.waiter_ok && !o.customer_ok) {
                             btnHtml = `<div class="bg-orange-900/50 text-orange-200 text-center py-3 rounded-xl text-xs border border-orange-500 animate-pulse font-bold">⏳ MÜŞTERİ ONAYI BEKLENİYOR...</div>`;
-                        } 
+                        }
                         // Durum 3: Kimse basmadı -> NORMAL MAVİ
                         else {
                             btnHtml = `<button onclick="confirmDelivery(${o.id})" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-sm shadow-lg transition transform active:scale-95">TESLİM ETTİM (ONAYLA) 📤</button>`;
@@ -144,10 +250,10 @@
 
                     // Kart Tasarımı
                     let card = `
-                        <div class="bg-gray-700 p-4 rounded-xl shadow-md border-l-4 ${o.status==='preparing'?'border-yellow-500':(o.status==='ready'?'border-green-500':'border-gray-500')} hover:bg-gray-650 transition">
+                        <div class="bg-gray-700 p-4 rounded-xl shadow-md border-l-4 ${o.status === 'preparing' ? 'border-yellow-500' : (o.status === 'ready' ? 'border-green-500' : 'border-gray-500')} hover:bg-gray-650 transition">
                             <div class="flex justify-between mb-2">
                                 <span class="font-bold bg-white text-black px-2 py-0.5 rounded-md text-sm shadow-sm">${o.table_number}</span>
-                                <span class="text-xs text-gray-400 font-mono">#${o.id} • ${new Date(o.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})}</span>
+                                <span class="text-xs text-gray-400 font-mono">#${o.id} • ${new Date(o.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
                             <div class="font-bold text-xl text-white mb-1">${o.customer_name}</div>
                             <div class="text-sm text-gray-300 mb-4 bg-gray-800/50 p-2 rounded-lg border border-gray-600 leading-relaxed">${o.items}</div>
@@ -155,46 +261,51 @@
                             <div class="text-right text-[10px] text-gray-500 mt-2 font-mono">Tutar: ${o.total_price} ₺</div>
                         </div>`;
 
-                    if(o.status === 'preparing') prep.push(card);
-                    else if(o.status === 'ready') ready.push(card); 
-                    else if(o.status === 'completed') comp.push(card);
+                    if (o.status === 'preparing') prep.push(card);
+                    else if (o.status === 'ready') ready.push(card);
+                    else if (o.status === 'completed') comp.push(card);
                 });
 
                 // HTML'e Basma
                 document.getElementById('col-preparing').innerHTML = prep.join('');
                 document.getElementById('col-ready').innerHTML = ready.join('');
                 document.getElementById('col-completed').innerHTML = comp.join('');
-                
+
                 // Sayıları Güncelle
                 document.getElementById('count-prep').innerText = prep.length;
                 document.getElementById('count-ready').innerText = ready.length;
                 document.getElementById('count-comp').innerText = comp.length;
+            } catch (e) { console.error("Veri çekme hatası:", e); }
+        }
 
-            } catch(e) { console.error("Veri çekme hatası:", e); }
+        function logout() {
+            localStorage.removeItem('access_token');
+            location.reload();
         }
 
         // Geçmiş Sorgulama
         async function loadHistory() {
             const d = document.getElementById('history-date').value;
-            if(!d) return alert("Lütfen tarih seçin!");
-            
+            if (!d) return alert("Lütfen tarih seçin!");
+
             try {
-                const res = await fetch(`/api/orders/history?date_str=${d}`);
+                const res = await fetch(`/api/orders/history?date_str=${d}`, { headers: getHeaders() });
+                if (res.status === 401) { logout(); return; }
                 const data = await res.json();
-                
-                if(data.length === 0) {
+
+                if (data.length === 0) {
                     document.getElementById('history-results').innerHTML = `<div class="col-span-full text-center text-gray-400 py-10">Bu tarihte kayıt bulunamadı.</div>`;
                     return;
                 }
 
-                const total = data.reduce((a,b)=>a+b.total_price,0);
-                
+                const total = data.reduce((a, b) => a + b.total_price, 0);
+
                 let html = `<div class="col-span-full bg-gradient-to-r from-blue-900 to-blue-800 p-6 rounded-2xl text-center border border-blue-500/30 shadow-lg mb-4">
                     <div class="text-sm text-blue-200 uppercase tracking-widest">Toplam Günlük Ciro</div>
                     <div class="text-4xl font-bold text-white mt-1">${total} ₺</div>
                 </div>`;
-                
-                html += data.map(o=>`
+
+                html += data.map(o => `
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-600 flex justify-between items-center">
                         <div>
                             <div class="font-bold text-white">#${o.id} - ${o.customer_name}</div>
@@ -202,17 +313,20 @@
                         </div>
                         <div class="text-right">
                             <div class="font-bold text-orange-400">${o.total_price} ₺</div>
-                            <div class="text-[10px] text-gray-500">${o.table_number}</div>
+                            <div class="text-xs text-gray-500">${o.table_number}</div>
                         </div>
                     </div>`).join('');
-                
+
                 document.getElementById('history-results').innerHTML = html;
-            } catch(e) { alert("Geçmiş yüklenirken hata oluştu."); }
+            } catch (e) { alert("Geçmiş yüklenirken hata oluştu."); }
         }
 
-        // Her 2 saniyede bir verileri yenile
-        setInterval(loadOrders, 2000);
-        loadOrders(); // İlk açılışta çalıştır
+        // Başlat
+        if (token) {
+            loadOrders();
+            connectWebSocket();
+        }
     </script>
 </body>
+
 </html>
