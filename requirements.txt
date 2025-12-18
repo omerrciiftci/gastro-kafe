@@ -2,7 +2,7 @@ fastapi
 uvicorn
 sqlalchemy
 python-jose[cryptography]
-passlib[bcrypt]
+passlib
 python-multipart
 slowapi
 python-dotenv
