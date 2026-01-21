@@ -43,20 +43,32 @@ def get_db():
     try: yield db
     finally: db.close()
 
-# --- WEBSOCKET ---
+# --- MÜZİK VERİSİ ---
+music_data = {
+    "now_playing": {"title": "İnegöl Marşı", "artist": "Belediye Bandosu"},
+    "candidates": [
+        {"id": 1, "title": "Mihriban", "artist": "Musa Eroğlu", "votes": 0},
+        {"id": 2, "title": "Erik Dalı", "artist": "Ömer Faruk Bostan", "votes": 0},
+        {"id": 3, "title": "Beyaz ve Sen", "artist": "Bülent Ortaçgil", "votes": 0}
+    ]
+}
+
+# --- WEBSOCKET YÖNETİCİSİ ---
 class ConnectionManager:
-    def __init__(self): self.active_connections = []
-    async def connect(self, ws: WebSocket): await ws.accept(); self.active_connections.append(ws)
-    def disconnect(self, ws: WebSocket):
-        if ws in self.active_connections: self.active_connections.remove(ws)
-    async def broadcast(self, message: dict):
-        for connection in self.active_connections:
+    def __init__(self): self.active_connections = {"orders": [], "music": []}
+    async def connect(self, ws: WebSocket, channel: str):
+        await ws.accept()
+        self.active_connections[channel].append(ws)
+    def disconnect(self, ws: WebSocket, channel: str):
+        if ws in self.active_connections[channel]: self.active_connections[channel].remove(ws)
+    async def broadcast(self, message: dict, channel: str):
+        for connection in self.active_connections[channel]:
             try: await connection.send_json(message)
             except: pass
 
 manager = ConnectionManager()
 
-# --- API ROTARI ---
+# --- AUTH ---
 @app.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(UserDB).filter(UserDB.username == form_data.username).first()
@@ -72,11 +84,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         return user
     except: raise HTTPException(401)
 
+# --- SİPARİŞ API ---
 @app.post("/api/orders")
 async def create_order(order: dict, db: Session = Depends(get_db)):
     new_order = OrderDB(**order)
     db.add(new_order); db.commit(); db.refresh(new_order)
-    await manager.broadcast({"type": "new_order", "id": new_order.id})
+    await manager.broadcast({"type": "new_order", "id": new_order.id}, "orders")
     return {"status": "success", "order_id": new_order.id}
 
 @app.get("/api/orders")
@@ -88,31 +101,52 @@ async def update_status(order_id: int, data: dict, db: Session = Depends(get_db)
     order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
     order.status = data['status']
     db.commit()
-    # KRİTİK: 'status' bilgisini WebSocket ile gönderiyoruz!
-    await manager.broadcast({"type": "update", "id": order.id, "status": order.status})
+    await manager.broadcast({"type": "update", "id": order.id, "status": order.status}, "orders")
     return {"status": "ok"}
 
 @app.put("/api/orders/{order_id}/confirm")
 async def confirm(order_id: int, data: dict, db: Session = Depends(get_db)):
     order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
-    if data['role'] == 'waiter': order.waiter_ok = True
+    if data.get('role') == 'waiter': order.waiter_ok = True
     else: order.customer_ok = True
-    
-    if order.waiter_ok and order.customer_ok: 
-        order.status = 'completed'
-    
+    if order.waiter_ok and order.customer_ok: order.status = 'completed'
     db.commit()
-    # KRİTİK: 'status' bilgisini WebSocket ile gönderiyoruz!
-    await manager.broadcast({"type": "update", "id": order.id, "status": order.status})
+    await manager.broadcast({"type": "update", "id": order.id, "status": order.status}, "orders")
     return {"status": "ok"}
 
+# --- MÜZİK API ---
+@app.get("/api/music")
+async def get_music():
+    total_votes = sum(s['votes'] for s in music_data['candidates']) or 1
+    for s in music_data['candidates']:
+        s['percent'] = int((s['votes'] / total_votes) * 100)
+    return music_data
+
+@app.post("/api/music/vote/{song_id}")
+async def vote_song(song_id: int):
+    for s in music_data['candidates']:
+        if s['id'] == song_id:
+            s['votes'] += 1
+            await manager.broadcast({"type": "update"}, "music")
+            return {"status": "ok"}
+    raise HTTPException(404)
+
+# --- WEBSOCKET ---
 @app.websocket("/ws/orders")
 async def ws_orders(ws: WebSocket):
-    await manager.connect(ws)
+    await manager.connect(ws, "orders")
     try:
         while True: await ws.receive_text()
-    except WebSocketDisconnect: manager.disconnect(ws)
+    except WebSocketDisconnect: manager.disconnect(ws, "orders")
 
+@app.websocket("/ws/music")
+async def ws_music(ws: WebSocket):
+    await manager.connect(ws, "music")
+    try:
+        while True: await ws.receive_text()
+    except WebSocketDisconnect: manager.disconnect(ws, "music")
+
+# --- STATİK VE STARTUP ---
 @app.get("/")
 async def index(): return FileResponse('index.html')
 @app.get("/panel")
